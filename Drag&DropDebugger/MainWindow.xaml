@@ -1,0 +1,17 @@
+﻿<Window x:Class="Drag_DropDebugger.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:control="clr-namespace:WpfHexaEditor;assembly=WPFHexaEditor"
+        
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+
+        xmlns:local="clr-namespace:Drag_DropDebugger"
+        mc:Ignorable="d"
+        Title="Drag and Drop Debugger" Height="650" Width="1100" Drop="Window_Drop">
+    <Grid>
+        <Label Content="Drop Item to Start" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <TabControl x:Name="tabControlParent" Background="{x:Null}">
+        </TabControl>
+    </Grid>
+</Window>
