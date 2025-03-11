@@ -26,8 +26,9 @@ namespace Drag_DropDebugger
     /// </summary>
     public partial class MainWindow : Window
     {
-        List<HexEditor> editors = new List<HexEditor>();
-        static List<string> FilesToDelete = new List<string>();
+        public static List<HexEditor> mHexEditors = new List<HexEditor>();
+        public static List<string> FilesToDelete = new List<string>();
+        static int DropDataCount = 0;
         public MainWindow()
         {
             InitializeComponent();
@@ -36,9 +37,9 @@ namespace Drag_DropDebugger
 
         protected override void OnClosed(EventArgs e)
         {
-            for(int i = 0; i < editors.Count; i++)
+            for(int i = 0; i < mHexEditors.Count; i++)
             {
-                editors[i].CloseProvider();
+                mHexEditors[i].CloseProvider();
             }
             for (int i = 0; i < FilesToDelete.Count; i++)
             {
@@ -165,7 +166,7 @@ namespace Drag_DropDebugger
             }
         }
 
-        HexEditor AddNewDataTab(TabControl tabCtrl, string DataType, int TabIndex)
+        HexEditor AddRawDataTab(TabControl tabCtrl, string DataType, int TabIndex)
         {
             HexEditor newHex = new HexEditor()
             {
@@ -193,7 +194,7 @@ namespace Drag_DropDebugger
             TabItem newTab = new TabItem();
             newTab.Header = DataType;
             newTab.Content = newHex;
-            editors.Add(newHex);
+            mHexEditors.Add(newHex);
 
             tabCtrl.Items.Add(newTab);
 
@@ -218,23 +219,6 @@ namespace Drag_DropDebugger
             return TabCtrl;
         }
 
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        struct FILEDESCRIPTOR
-        {
-            public UInt32 dwFlags;
-            public Guid clsid;
-            public System.Drawing.Size sizel;
-            public System.Drawing.Point pointl;
-            public UInt32 dwFileAttributes;
-            public System.Runtime.InteropServices.ComTypes.FILETIME ftCreationTime;
-            public System.Runtime.InteropServices.ComTypes.FILETIME ftLastAccessTime;
-            public System.Runtime.InteropServices.ComTypes.FILETIME ftLastWriteTime;
-            public UInt32 nFileSizeHigh;
-            public UInt32 nFileSizeLow;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
-            public String cFileName;
-        }
-
         void SetFileTabName(TabControl tabCtrl, string name)
         {
             if (tabCtrl.Parent is Grid)
@@ -246,12 +230,14 @@ namespace Drag_DropDebugger
             }
         }
 
+
         private void Window_Drop(object sender, DragEventArgs e)
         {
             TabControl tabCtrl = AddNewFileTab();
 
             string[] formats = e.Data.GetFormats();
             AddSummaryTab(tabCtrl, formats);
+            SetFileTabName(tabCtrl, "Drop Data #" + ++DropDataCount);
 
             for (int i = 0; i < formats.Length; i++)
             {
@@ -259,39 +245,30 @@ namespace Drag_DropDebugger
                 {
                     try
                     {
-                        dynamic filedrop = e.Data.GetData(formats[i]);
-
-                        if (filedrop is MemoryStream)
+                        if (formats[i] == "FileGroupDescriptorW")
                         {
-                            if (formats[i] == "FileGroupDescriptorW")
+                            DataHandlers.FileGroupDescriptor.Handle(tabCtrl, e.Data);
+                        }
+                        else
+                        {
+                            dynamic filedrop = e.Data.GetData(formats[i]);
+                            if (filedrop is MemoryStream)
                             {
-                                byte[] bytes = ((MemoryStream)filedrop).ToArray();
-                                List<byte> filenameStr = new List<byte>();
-                                int pos = 76;
-                                do
-                                {
-                                    filenameStr.Add(bytes[pos]);
-                                    filenameStr.Add(bytes[pos+1]);
-                                    pos += 2;
-                                } while (bytes[pos] != 0x0 | bytes[pos + 1] != 0x0);
-                                var mystring = Encoding.Unicode.GetString(filenameStr.ToArray(), 0, filenameStr.Count);
-                                SetFileTabName(tabCtrl, mystring);
+                                HexEditor newHex = AddRawDataTab(tabCtrl, formats[i], i);
+                                string tempFileName = Path.GetTempPath() + Path.GetRandomFileName();
+                                FilesToDelete.Add(tempFileName);
+
+                                FileStream tempFile = File.Create(tempFileName);
+                                ((MemoryStream)filedrop).CopyTo(tempFile);
+                                tempFile.Close();
+
+                                newHex.FileName = tempFileName;
                             }
 
-                            HexEditor newHex = AddNewDataTab(tabCtrl, formats[i], i);
-                            string tempFileName = Path.GetTempPath() + Path.GetRandomFileName();
-                            FilesToDelete.Add(tempFileName);
-
-                            FileStream tempFile = File.Create(tempFileName);
-                            ((MemoryStream)filedrop).CopyTo(tempFile);
-                            tempFile.Close();
-
-                            newHex.FileName = tempFileName;
-                        }
-
-                        if (filedrop is string[])
-                        {
-                            AddStringTab(tabCtrl, formats[i], (string[])filedrop);
+                            if (filedrop is string[])
+                            {
+                                AddStringTab(tabCtrl, formats[i], (string[])filedrop);
+                            }
                         }
                     }
                     catch (Exception ex)
