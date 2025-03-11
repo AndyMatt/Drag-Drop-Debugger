@@ -26,27 +26,12 @@ namespace Drag_DropDebugger
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static List<HexEditor> mHexEditors = new List<HexEditor>();
-        public static List<string> FilesToDelete = new List<string>();
+
         static int DropDataCount = 0;
         public MainWindow()
         {
             InitializeComponent();
             AllowDrop = true;
-        }
-
-        protected override void OnClosed(EventArgs e)
-        {
-            for(int i = 0; i < mHexEditors.Count; i++)
-            {
-                mHexEditors[i].CloseProvider();
-            }
-            for (int i = 0; i < FilesToDelete.Count; i++)
-            {
-                File.Delete(FilesToDelete[i]);
-            }
-
-            base.OnClosed(e);
         }
 
         void AddSummaryTab(TabControl tabCtrl, string[] DataFormats)

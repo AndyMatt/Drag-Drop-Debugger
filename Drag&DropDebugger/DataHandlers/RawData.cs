@@ -41,12 +41,12 @@ namespace Drag_DropDebugger.DataHandlers
             TabItem newTab = new TabItem();
             newTab.Header = typeName;
             newTab.Content = newHex;
-            MainWindow.mHexEditors.Add(newHex);
+            App.mHexEditors.Add(newHex);
 
             tabCtrl.Items.Add(newTab);
 
             string tempFileName = Path.GetTempPath() + Path.GetRandomFileName();
-            MainWindow.FilesToDelete.Add(tempFileName);
+            App.mFilePathBuffer.Add(tempFileName);
 
             FileStream tempFile = File.Create(tempFileName);
             fileGroupStream.Position = 0;
