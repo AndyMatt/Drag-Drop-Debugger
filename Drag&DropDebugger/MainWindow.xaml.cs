@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -84,42 +84,6 @@ namespace Drag_DropDebugger
             tabCtrl.Items.Add(newTab);
         }
 
-        void AddStringTab(TabControl tabCtrl, string DataType, string[] data)
-        {
-            ListBox listBox = new ListBox()
-            {
-                Margin = new Thickness(5.0, 0, 0, 0)
-            };
-
-            for (int i = 0; i < data.Length; i++)
-            {
-                listBox.Items.Add(data[i]);
-            }
-
-
-            Grid grid = new Grid();
-
-            grid.Children.Add(new Label()
-            {
-                Content = "String Data:",
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top,
-                Margin = new Thickness(5.0, 0, 0, 0)
-            });
-
-            grid.Children.Add(listBox);
-
-            TabItem newTab = new TabItem()
-            {
-                Header = DataType,
-                Height = 20,
-                VerticalAlignment = VerticalAlignment.Top,
-                Content = grid
-            };
-
-            tabCtrl.Items.Add(newTab);
-        }
-
         void AddErrorTab(TabControl tabCtrl, string DataType, string errorMsg)
         {
             ListBox listBox = new ListBox()
@@ -166,40 +130,6 @@ namespace Drag_DropDebugger
             }
         }
 
-        HexEditor AddRawDataTab(TabControl tabCtrl, string DataType, int TabIndex)
-        {
-            HexEditor newHex = new HexEditor()
-            {
-                Name = "DropData" + TabIndex.ToString(),
-                Margin = new Thickness(2, 2, 2, 2),
-                AllowByteCount = true,
-                AllowCustomBackgroundBlock = true,
-                AllowDrop = false,
-                AllowExtend = false,
-                AppendNeedConfirmation = true,
-                BorderThickness = new Thickness(1.0),
-                ByteGrouping = ByteSpacerGroup.EightByte,
-                ByteSpacerPositioning = ByteSpacerPosition.HexBytePanel,
-                ByteSpacerVisualStyle = ByteSpacerVisual.Empty,
-                ByteSpacerWidthTickness = ByteSpacerWidth.VerySmall,
-                BytePerLine = 32,
-                DataStringVisual = DataVisualType.Hexadecimal,
-                DefaultCopyToClipboardMode = CopyPasteMode.HexaString,
-                ForegroundSecondColor = new SolidColorBrush(Colors.Blue),
-                OffSetStringVisual = DataVisualType.Hexadecimal,
-                PreloadByteInEditorMode = PreloadByteInEditor.None,
-                VisualCaretMode = CaretMode.Overwrite
-            };
-
-            TabItem newTab = new TabItem();
-            newTab.Header = DataType;
-            newTab.Content = newHex;
-            mHexEditors.Add(newHex);
-
-            tabCtrl.Items.Add(newTab);
-
-            return newHex;
-        }
         TabControl AddNewFileTab()
         {
             TabItem newTab = new TabItem();
@@ -254,20 +184,11 @@ namespace Drag_DropDebugger
                             dynamic filedrop = e.Data.GetData(formats[i]);
                             if (filedrop is MemoryStream)
                             {
-                                HexEditor newHex = AddRawDataTab(tabCtrl, formats[i], i);
-                                string tempFileName = Path.GetTempPath() + Path.GetRandomFileName();
-                                FilesToDelete.Add(tempFileName);
-
-                                FileStream tempFile = File.Create(tempFileName);
-                                ((MemoryStream)filedrop).CopyTo(tempFile);
-                                tempFile.Close();
-
-                                newHex.FileName = tempFileName;
+                                DataHandlers.RawData.Handle(tabCtrl, filedrop, formats[i]);
                             }
-
-                            if (filedrop is string[])
+                            else if(filedrop is string[])
                             {
-                                AddStringTab(tabCtrl, formats[i], (string[])filedrop);
+                                DataHandlers.StringArray.Handle(tabCtrl,filedrop, formats[i]);
                             }
                         }
                     }
