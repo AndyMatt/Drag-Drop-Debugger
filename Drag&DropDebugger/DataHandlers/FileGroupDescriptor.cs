@@ -88,54 +88,6 @@ namespace Drag_DropDebugger.DataHandlers
             return $"{fileSizeConv}{bytePeriods[period]} ({byteSizeStr})";
         }
 
-        static void AddFileDescriptorTab(TabControl tabCtrl, FILEDESCRIPTORW desc)
-        {
-            ListBox listBox = new ListBox()
-            {
-                Margin = new Thickness(5.0, 0, 0, 0)
-            };
-
-            listBox.Items.Add(new string("FileName: " + desc.cFileName));
-            listBox.Items.Add(new string("FileSize: " + GetFileSizeString(desc.nFileSizeHigh, desc.nFileSizeLow)));
-            listBox.Items.Add(new ListBoxItem() { IsEnabled = false });
-            listBox.Items.Add(new ListBoxItem() { IsEnabled = false });
-            listBox.Items.Add(new string("dwFlags: " + FlagstoString(desc.dwFileAttributes)));
-            listBox.Items.Add(new string("clsid: " + desc.clsid));
-            listBox.Items.Add(new string("sizel: " + desc.sizel.cx + "," + desc.sizel.cy));
-            listBox.Items.Add(new string("pointl: " + desc.pointl.x + "," + desc.pointl.y));
-            listBox.Items.Add(new string("dwFileAttributes: " + FileAttributestoString(desc.dwFileAttributes)));
-            listBox.Items.Add(new string("ftCreationTime: " + GetTimeString(desc.ftCreationTime)));
-            listBox.Items.Add(new string("ftLastAccessTime: " + GetTimeString(desc.ftLastAccessTime)));
-            listBox.Items.Add(new string("ftLastWriteTime: " + GetTimeString(desc.ftLastWriteTime)));
-            listBox.Items.Add(new string("nFileSizeHigh: " + desc.nFileSizeHigh.ToString()));
-            listBox.Items.Add(new string("nFileSizeLow: " + desc.nFileSizeLow.ToString()));
-            listBox.Items.Add(new string("cFileName: " + desc.cFileName));
-
-
-            Grid grid = new Grid();
-
-            grid.Children.Add(new Label()
-            {
-                Content = "String Data:",
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top,
-                Margin = new Thickness(5.0, 0, 0, 0)
-            });
-
-            grid.Children.Add(listBox);
-
-            TabItem newTab = new TabItem()
-            {
-                Header = desc.cFileName,
-                Height = 20,
-                VerticalAlignment = VerticalAlignment.Top,
-                Content = grid
-            };
-
-            tabCtrl.Items.Add(newTab);
-        }
-
-
         [StructLayout(LayoutKind.Sequential)]
         public sealed class POINTL
         {
@@ -220,80 +172,38 @@ namespace Drag_DropDebugger.DataHandlers
             }
         }
 
-        static HexEditor AddRawDataTab(TabControl tabCtrl, MemoryStream fileGroupStream)
+        static void AddFileDescriptorTab(TabControl tabCtrl, FILEDESCRIPTORW? desc)
         {
-            HexEditor newHex = new HexEditor()
+            if (desc == null)
+                return;
+
+            TabHelper.AddStringListTab(tabCtrl, desc.cFileName, new string[]
             {
-                Name = "FileGroupDescriptorW_Hex",
-                Margin = new Thickness(2, 2, 2, 2),
-                AllowByteCount = true,
-                AllowCustomBackgroundBlock = true,
-                AllowDrop = false,
-                AllowExtend = false,
-                AppendNeedConfirmation = true,
-                BorderThickness = new Thickness(1.0),
-                ByteGrouping = ByteSpacerGroup.EightByte,
-                ByteSpacerPositioning = ByteSpacerPosition.HexBytePanel,
-                ByteSpacerVisualStyle = ByteSpacerVisual.Empty,
-                ByteSpacerWidthTickness = ByteSpacerWidth.VerySmall,
-                BytePerLine = 32,
-                DataStringVisual = DataVisualType.Hexadecimal,
-                DefaultCopyToClipboardMode = CopyPasteMode.HexaString,
-                ForegroundSecondColor = new SolidColorBrush(Colors.Blue),
-                OffSetStringVisual = DataVisualType.Hexadecimal,
-                PreloadByteInEditorMode = PreloadByteInEditor.None,
-                VisualCaretMode = CaretMode.Overwrite
-            };
-
-            TabItem newTab = new TabItem();
-            newTab.Header = "Raw View";
-            newTab.Content = newHex;
-            App.mHexEditors.Add(newHex);
-
-            tabCtrl.Items.Add(newTab);
-
-            string tempFileName = Path.GetTempPath() + Path.GetRandomFileName();
-            App.mFilePathBuffer.Add(tempFileName);
-
-            FileStream tempFile = File.Create(tempFileName);
-            fileGroupStream.Position = 0;
-            fileGroupStream.CopyTo(tempFile);
-            tempFile.Close();
-
-            newHex.FileName = tempFileName;
-
-            return newHex;
-        }
-
-        static TabControl AddFileGroupTab(TabControl parentTab)
-        {
-            TabItem newTab = new TabItem()
-            {
-                Header = "FileGroupDescriptorW"
-            };
-            Grid newGrid = new Grid()
-            {
-                Background = new SolidColorBrush(Color.FromArgb(0xFF, 0xE5, 0xE5, 0xE5)),
-                Margin = new Thickness(5.0, 5.0, 5.0, 0.0),
-            };
-
-            TabControl childTabCtrl = new TabControl();
-
-            newTab.Content = newGrid;
-            newGrid.Children.Add(childTabCtrl);
-
-            parentTab.Items.Add(newTab);
-
-            return childTabCtrl;
+                $"FileName: {desc.cFileName}",
+                $"FileSize: {GetFileSizeString(desc.nFileSizeHigh, desc.nFileSizeLow)}",
+                "",
+                $"dwFlags: {FlagstoString(desc.dwFileAttributes)}",
+                $"clsid: {desc.clsid}",
+                $"sizel: ({desc.sizel.cx},{desc.sizel.cy})",
+                $"pointl: ({desc.pointl.x},{desc.pointl.y})",
+                $"dwFileAttributes: {FileAttributestoString(desc.dwFileAttributes)}",
+                $"ftCreationTime: {GetTimeString(desc.ftCreationTime)}",
+                $"ftLastAccessTime: {GetTimeString(desc.ftLastAccessTime)}",
+                $"ftLastWriteTime: {GetTimeString(desc.ftLastWriteTime)}",
+                $"nFileSizeHigh: {desc.nFileSizeHigh.ToString()}",
+                $"nFileSizeLow: {desc.nFileSizeLow.ToString()}",
+                $"cFileName: {desc.cFileName}"});
         }
 
         public static void Handle(TabControl ParentTab, IDataObject dropData)
         {
             if (dropData.GetDataPresent("FileGroupDescriptorW"))
             {
-                TabControl childTabCtrl = AddFileGroupTab(ParentTab);
+                //TabControl childTabCtrl = AddFileGroupTab(ParentTab);
+                TabControl childTabCtrl = TabHelper.AddSubTab(ParentTab, "FileGroupDescriptorW");
                 MemoryStream fileGroupStream = (MemoryStream)dropData.GetData("FileGroupDescriptorW");
-                AddRawDataTab(childTabCtrl, fileGroupStream);
+                TabHelper.AddRawDataTab(childTabCtrl, fileGroupStream);
+                //AddRawDataTab(childTabCtrl, fileGroupStream);
                 ProcessFileDescriptor(childTabCtrl, fileGroupStream);
                 fileGroupStream.Close();
             }
