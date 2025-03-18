@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -67,7 +67,7 @@ namespace Drag_DropDebugger.DataHandlers
         }
 
 
-        public uint scan_uint(uint offset)
+        public uint scan_uint(uint offset = 0)
         {
             uint _of = offset + _iterator;
             uint result = ((uint)bytes[_of + 3] << 24) | ((uint)bytes[_of + 2] << 16) | ((uint)bytes[_of + 1] << 8) | bytes[_of];
@@ -79,6 +79,12 @@ namespace Drag_DropDebugger.DataHandlers
             ushort result = (ushort)(bytes[_iterator + 1] << 8 | (bytes[_iterator]));
             if (advance)
                 _iterator += sizeof(ushort);
+            return result;
+        }
+        public ushort scan_ushort(uint offset = 0)
+        {
+            uint _of = offset + _iterator;
+            ushort result = (ushort)(bytes[_of + 1] << 8 | (bytes[_of]));
             return result;
         }
 

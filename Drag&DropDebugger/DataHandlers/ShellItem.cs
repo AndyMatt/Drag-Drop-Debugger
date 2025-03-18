@@ -30,6 +30,7 @@ namespace Drag_DropDebugger.DataHandlers
         ushort mSize;
         byte mflagIdentifier;
         string mLabel;
+        FileEntryShellItem? mFileEntry;
         public RootFolderShellItem(TabControl parentTab, ByteReader byteReader)
         {
             mSize = byteReader.read_ushort();
@@ -42,6 +43,16 @@ namespace Drag_DropDebugger.DataHandlers
                 $"Flag Identifier: {mflagIdentifier}",
                 $"Label: {mLabel}"
             });
+
+            while(byteReader.scan_ushort() != 0x0)
+            {
+                ushort identifier = byteReader.scan_ushort(2);
+
+                if((identifier & 0x70) == 0x30)
+                {
+                    mFileEntry = new FileEntryShellItem(TabHelper.AddSubTab(parentTab, "FileEntryShellItem"), byteReader);
+                }
+            }
         }
     }
 
