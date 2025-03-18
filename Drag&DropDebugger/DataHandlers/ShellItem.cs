@@ -454,9 +454,16 @@ namespace Drag_DropDebugger.DataHandlers
         static Dictionary<Guid, Type> ClassIDs = new Dictionary<Guid, Type>()
         {
             {new Guid("20D04FE0-3AEA-1069-A2D8-08002B30309D"), typeof(RootFolderShellItem)},
+            {new Guid("4234D49B-0245-4DF3-B780-3893943456E1"), typeof(ApplicationShellItem)},
             {new Guid("59031A47-3F72-44A7-89C5-5595FE6B30EE"), typeof(UserFolderShellItem)},
             {new Guid("24AD3AD4-A569-4530-98E1-AB02F9417AA8"), typeof(UserFolderShellItem)},
-            {new Guid("4234D49B-0245-4DF3-B780-3893943456E1"), typeof(ApplicationShellItem)},
+            {new Guid("088e3905-0323-4b02-9826-5d99428e115f"), typeof(UserFolderShellItem)},
+            {new Guid("1cf1260c-4dd0-4ebb-811f-33c572699fde"), typeof(UserFolderShellItem)},
+            {new Guid("a8cdff1c-4878-43be-b5fd-f8091c1c60d0"), typeof(UserFolderShellItem)},
+            {new Guid("b4bfcc3a-db2c-424c-b029-7fe99a87c641"), typeof(UserFolderShellItem)},
+            {new Guid("374de290-123f-4565-9164-39c4925e467b"), typeof(UserFolderShellItem)},
+            {new Guid("3add1653-eb32-4cb0-bbd7-dfa0abb5acca"), typeof(UserFolderShellItem)},
+            {new Guid("a0953c92-50dc-43bf-be83-3742fed03c9c"), typeof(UserFolderShellItem)},
         };
 
         public static object? Handle(TabControl parentTab, ByteReader byteReader)
@@ -487,6 +494,10 @@ namespace Drag_DropDebugger.DataHandlers
                     }
            
                     return Activator.CreateInstance(ClassType, childTab, byteReader);
+                }
+                else
+                {
+                    TabHelper.AddStringTab(parentTab, "MissingGuid", $"GIUD {{{classID.ToString()}}} is Missing");
                 }
             }
             else if(indicator == 0x32)
