@@ -239,5 +239,23 @@ namespace Drag_DropDebugger
 
             return "??";
         }
+
+
+        [DllImport("shell32.dll")]
+        static extern int SHGetKnownFolderPath([MarshalAs(UnmanagedType.LPStruct)] Guid rfid, uint dwFlags, IntPtr hToken, out IntPtr pszPath);
+
+        static uint DEFAULT_PATH = 0x400;
+        public static string GetFolderFromKnownFolderGUID(Guid guid)
+        {
+            IntPtr pPath;
+            SHGetKnownFolderPath(guid, DEFAULT_PATH, IntPtr.Zero, out pPath); // public documents
+            if (pPath != IntPtr.Zero)
+            {
+                string path = System.Runtime.InteropServices.Marshal.PtrToStringUni(pPath);
+                System.Runtime.InteropServices.Marshal.FreeCoTaskMem(pPath);
+                return path;
+            }
+            return "??";
+        }
     }
 }
