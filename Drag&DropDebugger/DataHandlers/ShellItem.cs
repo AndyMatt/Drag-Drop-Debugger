@@ -1,4 +1,4 @@
-﻿using Microsoft.Windows.Themes;
+using Microsoft.Windows.Themes;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -107,10 +107,10 @@ namespace Drag_DropDebugger.DataHandlers
 
             if (mLongStringSize > 0)
             {
-                if (mVersion >= 3)
+                if (mVersion >= 7)
+                    mLocalizedName = byteReader.read_UnicodeString(); 
+                else if (mVersion >= 3)
                     mLocalizedName = byteReader.read_AsciiString();
-                else if(mVersion >= 7)
-                    mLocalizedName = byteReader.read_UnicodeString();
             }
 
             if(mVersion >= 3)
