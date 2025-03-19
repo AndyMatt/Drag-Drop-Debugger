@@ -14,7 +14,8 @@ namespace Drag_DropDebugger.Items
         string mVersion;
         public Guid mClassID;
         //SimplePropertyRecord mRecord;
-        byte[] mRecord;
+        byte[]? mRecord;
+        ApplicationShellPropertySets? mPropertySets;
 
         const uint mVersionSize = 4;
 
@@ -28,9 +29,15 @@ namespace Drag_DropDebugger.Items
             mVersion = byteReader.read_AsciiString(mVersionSize);
             mClassID = byteReader.read_guid();
 
-            uint Length = mSize - sizeof(uint) - (uint)Encoding.ASCII.GetByteCount(mVersion) - (uint)byteReader.GetGUIDSize();
-
-            mRecord = byteReader.read_bytes(Length);
+            if (mClassID.ToString().ToUpper() == "9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3")
+            {
+                ApplicationShellPropertySets.Handle(tabCtrl, byteReader);
+            }
+            else
+            {
+                uint Length = mSize - sizeof(uint) - (uint)Encoding.ASCII.GetByteCount(mVersion) - (uint)byteReader.GetGUIDSize();
+                mRecord = byteReader.read_bytes(Length);
+            }
 
             string HeaderName = "Set" + (index == -1 ? "" : $"#{index + 1}") + $" ";
 
