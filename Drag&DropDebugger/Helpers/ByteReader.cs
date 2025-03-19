@@ -112,6 +112,13 @@ namespace Drag_DropDebugger.Helpers
             return result;
         }
 
+        public byte[] read_remainingbytes()
+        {
+            byte[] result = new byte[bytes.Length - _iterator];
+            Array.Copy(bytes, _iterator, result, 0, bytes.Length - _iterator);
+            return result;
+        }
+
         public string read_AsciiString(uint strLength, bool advance = true)
         {
             string result = Encoding.ASCII.GetString(bytes, (int)_iterator, (int)strLength);

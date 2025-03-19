@@ -14,29 +14,33 @@ namespace Drag_DropDebugger.Items
         string mVersion;
         public Guid mClassID;
         //SimplePropertyRecord mRecord;
-        byte[]? mRecord;
-        ApplicationShellPropertySets? mPropertySets;
+        dynamic mPropertySet;
 
         const uint mVersionSize = 4;
 
         public WindowsPropertySet(TabControl tabCtrl, ByteReader byteReader, int index = -1)
         {
             TabControl childTab = TabHelper.AddSubTab(tabCtrl, index == -1 ? "PropertySet" : $"PropertySet#{index + 1}");
-            byte[] rawData = byteReader.read_bytes(byteReader.read_uint(false), false);
+            byte[] rawData = byteReader.read_bytes(byteReader.read_uint(false));
             TabHelper.AddRawDataTab(childTab, rawData);
 
-            mSize = byteReader.read_uint();
-            mVersion = byteReader.read_AsciiString(mVersionSize);
-            mClassID = byteReader.read_guid();
+            ByteReader propertyReader = new ByteReader(rawData);
+
+            mSize = propertyReader.read_uint();
+            mVersion = propertyReader.read_AsciiString(mVersionSize);
+            mClassID = propertyReader.read_guid();
 
             if (mClassID.ToString().ToUpper() == "9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3")
             {
-                ApplicationShellPropertySets.Handle(tabCtrl, byteReader);
+                ApplicationShellPropertySets.Handle(childTab, propertyReader);
+            }
+            else if (mClassID.ToString().ToUpper() == "B9B4B3FC-2B51-4A42-B5D8-324146AFCF25")
+            {
+                mPropertySet = new TargetParsingPath(childTab, propertyReader);
             }
             else
             {
-                uint Length = mSize - sizeof(uint) - (uint)Encoding.ASCII.GetByteCount(mVersion) - (uint)byteReader.GetGUIDSize();
-                mRecord = byteReader.read_bytes(Length);
+                mPropertySet = propertyReader.read_remainingbytes();
             }
 
             string HeaderName = "Set" + (index == -1 ? "" : $"#{index + 1}") + $" ";
