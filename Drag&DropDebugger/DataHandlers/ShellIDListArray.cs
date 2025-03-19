@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Drag_DropDebugger.Helpers;
+using Drag_DropDebugger.Items;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -15,39 +17,6 @@ namespace Drag_DropDebugger.DataHandlers
 {
     public class ShellIDListArray
     {
-        public class WindowsPropertySet
-        {
-            uint mSize;
-            string mVersion;
-            public Guid mClassID;
-            //SimplePropertyRecord mRecord;
-            byte[] mRecord;
-
-            const uint mVersionSize = 4;
-
-            public WindowsPropertySet(TabControl tabCtrl, ByteReader byteReader, int index = -1)
-            {
-                TabControl childTab = TabHelper.AddSubTab(tabCtrl, (index == -1 ? "PropertySet" : $"PropertySet#{index + 1}"));
-                byte[] rawData = byteReader.read_bytes(byteReader.read_uint(false), false);
-                TabHelper.AddRawDataTab(childTab, rawData);
-
-                mSize = byteReader.read_uint();
-                mVersion = byteReader.read_AsciiString(mVersionSize);
-                mClassID = byteReader.read_guid();
-
-                uint Length = mSize - sizeof(uint) - (uint)System.Text.ASCIIEncoding.ASCII.GetByteCount(mVersion) - (uint)byteReader.GetGUIDSize();
-
-                mRecord = byteReader.read_bytes(Length);
-
-                string HeaderName = "Set" + (index == -1 ? "" : $"#{index + 1}") + $" ";
-
-                TabHelper.AddStringListTab(childTab, "Header", new string[]{ 
-                    $"mSize: {mSize} (0x{mSize.ToString("X")})",
-                    $"mVersion: {mVersion}",
-                    $"mClassID: {mClassID.ToString()}"}, 0);
-            }
-        }
-
         class FolderContext
         {
             public uint mSize;
@@ -62,7 +31,6 @@ namespace Drag_DropDebugger.DataHandlers
                     $"Size: {mSize} (0x{mSize.ToString("X")})",
                     $"Data: {Convert.ToHexString(mData)}"});
             }
-
         }
 
         static uint CIDA_NULL_TERMINATOR = 1;

@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drag_DropDebugger.DataHandlers
+namespace Drag_DropDebugger.Helpers
 {
     public class ByteReader
     {
@@ -50,17 +50,17 @@ namespace Drag_DropDebugger.DataHandlers
             }
         }
 
-        public UInt64 read_uint64(bool advance = true)
+        public ulong read_uint64(bool advance = true)
         {
             uint hi = read_uint();
             uint low = read_uint();
 
-            return ((UInt64)low << 32) | hi;
+            return (ulong)low << 32 | hi;
         }
 
         public uint read_uint(bool advance = true)
         {
-            uint result = ((uint)bytes[_iterator + 3] << 24) | ((uint)bytes[_iterator + 2] << 16) | ((uint)bytes[_iterator + 1] << 8) | bytes[_iterator];
+            uint result = (uint)bytes[_iterator + 3] << 24 | (uint)bytes[_iterator + 2] << 16 | (uint)bytes[_iterator + 1] << 8 | bytes[_iterator];
             if (advance)
                 _iterator += sizeof(uint);
             return result;
@@ -70,13 +70,13 @@ namespace Drag_DropDebugger.DataHandlers
         public uint scan_uint(uint offset = 0)
         {
             uint _of = offset + _iterator;
-            uint result = ((uint)bytes[_of + 3] << 24) | ((uint)bytes[_of + 2] << 16) | ((uint)bytes[_of + 1] << 8) | bytes[_of];
+            uint result = (uint)bytes[_of + 3] << 24 | (uint)bytes[_of + 2] << 16 | (uint)bytes[_of + 1] << 8 | bytes[_of];
             return result;
         }
 
         public ushort read_ushort(bool advance = true)
         {
-            ushort result = (ushort)(bytes[_iterator + 1] << 8 | (bytes[_iterator]));
+            ushort result = (ushort)(bytes[_iterator + 1] << 8 | bytes[_iterator]);
             if (advance)
                 _iterator += sizeof(ushort);
             return result;
@@ -84,7 +84,7 @@ namespace Drag_DropDebugger.DataHandlers
         public ushort scan_ushort(uint offset = 0)
         {
             uint _of = offset + _iterator;
-            ushort result = (ushort)(bytes[_of + 1] << 8 | (bytes[_of]));
+            ushort result = (ushort)(bytes[_of + 1] << 8 | bytes[_of]);
             return result;
         }
 
@@ -114,7 +114,7 @@ namespace Drag_DropDebugger.DataHandlers
 
         public string read_AsciiString(uint strLength, bool advance = true)
         {
-            string result = System.Text.Encoding.ASCII.GetString(bytes, (int)_iterator, (int)strLength);
+            string result = Encoding.ASCII.GetString(bytes, (int)_iterator, (int)strLength);
             if (advance)
                 _iterator += strLength;
             return result;
@@ -129,7 +129,7 @@ namespace Drag_DropDebugger.DataHandlers
                 strLength++;
             }
 
-            string result = System.Text.Encoding.ASCII.GetString(bytes, (int)_iterator, (int)strLength);
+            string result = Encoding.ASCII.GetString(bytes, (int)_iterator, (int)strLength);
             if (advance)
                 _iterator += strLength + 1;
             return result;
@@ -143,11 +143,11 @@ namespace Drag_DropDebugger.DataHandlers
             {
                 pos += 2;
             }
-            while ((bytes[pos] != 0 << 8) | bytes[pos + 1] != 0);
+            while (bytes[pos] != 0 << 8 | bytes[pos + 1] != 0);
 
             uint length = pos - _iterator;
 
-            string result = System.Text.Encoding.Unicode.GetString(bytes, (int)_iterator, (int)length);
+            string result = Encoding.Unicode.GetString(bytes, (int)_iterator, (int)length);
             if (advance)
                 _iterator += length + 2;
             return result;
@@ -163,7 +163,7 @@ namespace Drag_DropDebugger.DataHandlers
         public bool advance_TerminalIdentifier()
         {
             uint nullTerminator = read_uint();
-            return (nullTerminator == 0);
+            return nullTerminator == 0;
         }
     }
 }

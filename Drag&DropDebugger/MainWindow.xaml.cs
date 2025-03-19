@@ -18,6 +18,7 @@ using WpfHexaEditor.Core.MethodExtention;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.Xml;
+using Drag_DropDebugger.Helpers;
 
 namespace Drag_DropDebugger
 {

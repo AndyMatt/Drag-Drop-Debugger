@@ -11,7 +11,7 @@ using WpfHexaEditor.Core;
 using WpfHexaEditor;
 using System.Windows.Input;
 
-namespace Drag_DropDebugger
+namespace Drag_DropDebugger.Helpers
 {
     internal class TabHelper
     {
@@ -175,7 +175,7 @@ namespace Drag_DropDebugger
         {
             if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && e.Key == Key.C)
             {
-                System.Text.StringBuilder copy_buffer = new System.Text.StringBuilder();
+                StringBuilder copy_buffer = new StringBuilder();
                 foreach (object item in ((ListBox)sender).SelectedItems)
                     copy_buffer.AppendLine(item.ToString());
                 if (copy_buffer.Length > 0)

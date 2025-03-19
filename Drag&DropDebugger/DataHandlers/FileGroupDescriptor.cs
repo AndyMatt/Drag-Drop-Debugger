@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Media;
 using WpfHexaEditor.Core;
 using WpfHexaEditor;
+using Drag_DropDebugger.Helpers;
 
 namespace Drag_DropDebugger.DataHandlers
 {

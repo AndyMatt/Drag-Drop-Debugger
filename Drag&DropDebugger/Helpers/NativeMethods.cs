@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace Drag_DropDebugger
+namespace Drag_DropDebugger.Helpers
 {
     internal class NativeMethods
     {
@@ -213,24 +213,25 @@ namespace Drag_DropDebugger
         [DllImport("shell32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         internal static extern int SHParseDisplayName(
            [MarshalAs(UnmanagedType.LPWStr)] string pszName,
-           IntPtr pbc,
-           out IntPtr ppidl,
+           nint pbc,
+           out nint ppidl,
            ShellFileGetAttributesOptions sfgaoIn,
            out ShellFileGetAttributesOptions psfgaoOut
        );
 
         [DllImport("shell32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool SHGetPathFromIDListW(IntPtr pidl, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszPath);
+        internal static extern bool SHGetPathFromIDListW(nint pidl, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszPath);
 
         public static string GetPathFromGUID(Guid guid)
         {
-            IntPtr pidl = IntPtr.Zero;
+            nint pidl = nint.Zero;
             StringBuilder sb = new StringBuilder(260);
-            NativeMethods.ShellFileGetAttributesOptions opts = 0x0;
-            NativeMethods.SHParseDisplayName($"::{{{guid.ToString()}}}", 0, out pidl, 0, out opts);
-            if (pidl != IntPtr.Zero) {
-                NativeMethods.SHGetPathFromIDListW(pidl, sb);
+            ShellFileGetAttributesOptions opts = 0x0;
+            SHParseDisplayName($"::{{{guid.ToString()}}}", 0, out pidl, 0, out opts);
+            if (pidl != nint.Zero)
+            {
+                SHGetPathFromIDListW(pidl, sb);
                 if (sb.Length > 0)
                 {
                     return sb.ToString();
@@ -242,17 +243,17 @@ namespace Drag_DropDebugger
 
 
         [DllImport("shell32.dll")]
-        static extern int SHGetKnownFolderPath([MarshalAs(UnmanagedType.LPStruct)] Guid rfid, uint dwFlags, IntPtr hToken, out IntPtr pszPath);
+        static extern int SHGetKnownFolderPath([MarshalAs(UnmanagedType.LPStruct)] Guid rfid, uint dwFlags, nint hToken, out nint pszPath);
 
         static uint DEFAULT_PATH = 0x400;
         public static string GetFolderFromKnownFolderGUID(Guid guid)
         {
-            IntPtr pPath;
-            SHGetKnownFolderPath(guid, DEFAULT_PATH, IntPtr.Zero, out pPath); // public documents
-            if (pPath != IntPtr.Zero)
+            nint pPath;
+            SHGetKnownFolderPath(guid, DEFAULT_PATH, nint.Zero, out pPath); // public documents
+            if (pPath != nint.Zero)
             {
-                string path = System.Runtime.InteropServices.Marshal.PtrToStringUni(pPath);
-                System.Runtime.InteropServices.Marshal.FreeCoTaskMem(pPath);
+                string path = Marshal.PtrToStringUni(pPath);
+                Marshal.FreeCoTaskMem(pPath);
                 return path;
             }
             return "??";
