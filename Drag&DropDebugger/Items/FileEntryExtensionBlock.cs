@@ -1,6 +1,7 @@
 ﻿using Drag_DropDebugger.Helpers;
 using System;
 using System.Collections.Generic;
+using System.IO.Packaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,9 +39,10 @@ namespace Drag_DropDebugger.Items
         string mLocalizedName;
         ushort mExtensionBlockOffset;
 
-        public FileEntryExtensionBlock(TabControl parentTab, ByteReader byteReader)
+        public FileEntryExtensionBlock(TabControl parentTab, ByteReader byteReader, byte classByte)
         {
-            TabControl childTab = TabHelper.AddSubTab(parentTab, "FileEntryExtensionBlock");
+            string classTypeName = GetClassTypeString(classByte);
+            TabControl childTab = TabHelper.AddSubTab(parentTab, classTypeName);
             byte[] rawData = byteReader.read_bytes(byteReader.read_ushort(false), false);
             TabHelper.AddRawDataTab(childTab, rawData);
 
@@ -82,6 +84,14 @@ namespace Drag_DropDebugger.Items
             }
 
             AddTab(childTab);
+        }
+
+        string GetClassTypeString(byte _classTypeID)
+        {
+            if ((_classTypeID & 0x1) == 0x1)
+                return "DirectoryExtryExtensionBlock";
+
+            return "FileExtryExtensionBlock";
         }
 
         void AddTab(TabControl parentTab)

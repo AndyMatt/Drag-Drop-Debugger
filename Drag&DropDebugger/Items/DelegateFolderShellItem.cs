@@ -38,7 +38,7 @@ namespace Drag_DropDebugger.Items
 
             if (hasExtensionBlock(byteReader))
             {
-                mExtensionBlock = new FileEntryExtensionBlock(parentTab, byteReader);
+                mExtensionBlock = new FileEntryExtensionBlock(parentTab, byteReader, mClassType);
             }
 
             AddTab(parentTab);

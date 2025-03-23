@@ -43,7 +43,7 @@ namespace Drag_DropDebugger.Items
 
                 if ((identifier & 0x70) == 0x30)
                 {
-                    mFileEntry = new FileEntryShellItem(TabHelper.AddSubTab(parentTab, "FileEntryShellItem"), byteReader);
+                    mFileEntry = new FileEntryShellItem(parentTab, byteReader);
                 }
             }
         }

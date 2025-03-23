@@ -23,7 +23,6 @@ namespace Drag_DropDebugger.Items
         public FileEntryShellItem(TabControl parentTab, ByteReader byteReader)
         {
             byte[] rawData = byteReader.read_bytes(byteReader.read_ushort(false), false);
-            TabHelper.AddRawDataTab(parentTab, rawData);
 
             mSize = byteReader.read_ushort();
             mClassType = byteReader.read_byte();
@@ -34,13 +33,15 @@ namespace Drag_DropDebugger.Items
             mPrimaryName = byteReader.read_AsciiString();
             byteReader.SkipTerminators();
 
+            TabControl childTab = TabHelper.AddSubTab(parentTab, GetClassTypeString(mClassType));
+            TabHelper.AddRawDataTab(childTab, rawData);
 
             if (hasExtensionBlock(byteReader))
             {
-                mExtensionBlock = new FileEntryExtensionBlock(parentTab, byteReader);
+                mExtensionBlock = new FileEntryExtensionBlock(childTab, byteReader, mClassType);
             }
 
-            TabHelper.AddStringListTab(parentTab, "Header", new string[]{
+            TabHelper.AddStringListTab(childTab, "Header", new string[]{
 
                 $"Size: {mSize} (0x{mSize.ToString("X")})",
                 $"ClassType: {mClassType}",
@@ -49,6 +50,14 @@ namespace Drag_DropDebugger.Items
                 $"LastModificationDate: {mLastModificationTime}",
                 $"FileAttributes: {mFileAttributes}",
                 $"PrimaryName: {mPrimaryName}" }, 0);
+        }
+
+        string GetClassTypeString(byte _classTypeID)
+        {
+            if ((_classTypeID & 0x1) == 0x1)
+                return "DirectoryShellItem";
+
+            return "FileEntryShellItem";
         }
 
         const uint ExtensionSignitureOffset = 4;
