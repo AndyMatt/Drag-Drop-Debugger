@@ -34,7 +34,7 @@ namespace Drag_DropDebugger.Items
 
         static Dictionary<Guid, Type> ClassIDs = new Dictionary<Guid, Type>()
         {
-            {new Guid("20D04FE0-3AEA-1069-A2D8-08002B30309D"), typeof(RootFolderShellItem)},
+            {new Guid("20D04FE0-3AEA-1069-A2D8-08002B30309D"), typeof(MyComputerShellItem)},
             {new Guid("4234D49B-0245-4DF3-B780-3893943456E1"), typeof(ApplicationShellItem)},
             {new Guid("59031A47-3F72-44A7-89C5-5595FE6B30EE"), typeof(UserFolderShellItem)},
             {new Guid("24AD3AD4-A569-4530-98E1-AB02F9417AA8"), typeof(UserFolderShellItem)},
@@ -48,12 +48,13 @@ namespace Drag_DropDebugger.Items
         };
 
         public static object? Handle(TabControl parentTab, ByteReader byteReader)
-        {
-            ushort size = byteReader.read_ushort();
-            byte indicator = byteReader.read_byte();
+        {            
+            byte indicator = byteReader.scan_byte(sizeof(ushort));
 
             if (indicator == 0x1f)
             {
+                ushort size = byteReader.read_ushort();
+                indicator = byteReader.read_byte();
                 byte sortIndex = byteReader.read_byte();
                 Guid classID = byteReader.read_guid();
 
@@ -81,15 +82,18 @@ namespace Drag_DropDebugger.Items
                     TabHelper.AddStringTab(parentTab, "MissingGuid", $"GIUD {{{classID.ToString()}}} is Missing");
                 }
             }
+            else if (indicator == 0x2F)
+            {
+                TabControl childTab = TabHelper.AddSubTab(parentTab, "RootFolderShellItem");
+                return new RootFolderShellItem(childTab, byteReader);
+            }
             else if (indicator == 0x32)
             {
-                byteReader.RollBack(3);
                 TabControl childTab = TabHelper.AddSubTab(parentTab, "FileEntryShellItem");
                 return new FileEntryShellItem(childTab, byteReader);
             }
             else if (indicator == 0x74)
             {
-                byteReader.RollBack(3);
                 TabControl childTab = TabHelper.AddSubTab(parentTab, "DelegateFolderShellItem");
                 return new DelegateFolderShellItem(childTab, byteReader);
             }
