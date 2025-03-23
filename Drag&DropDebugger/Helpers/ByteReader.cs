@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -94,6 +94,11 @@ namespace Drag_DropDebugger.Helpers
                 return bytes[_iterator++];
 
             return bytes[_iterator];
+        }
+
+        public byte scan_byte(uint offset)
+        {
+           return bytes[_iterator+offset];
         }
 
         public byte[] copy_allbytes()
