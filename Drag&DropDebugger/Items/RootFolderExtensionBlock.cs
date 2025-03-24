@@ -13,11 +13,13 @@ namespace Drag_DropDebugger.Items
         ushort mSize;
         ushort mVersion; // Seen 0x0001
         uint mExtensionSigniture; //0xBEEF0027
-        uint mUnknown; //0x00000011
+        uint mUnknownFlag; //0x00000011
         ulong mFileTime1;
         ulong mFileTime2;
         ulong mFileTime3;
-        uint mFirstExtensionBlockOffset;
+
+        ushort mListSize;
+        ushort mFirstExtensionBlockOffset;
 
         public string[] toStringList()
         {
@@ -25,7 +27,7 @@ namespace Drag_DropDebugger.Items
             list.Add($"Size: {mSize} (0x{mSize.ToString("X")})");
             list.Add($"Version: {mVersion}");
             list.Add($"ExtensionSigniture: 0x{mExtensionSigniture.ToString("X2")}");
-            list.Add($"Unknown: {mUnknown}");
+            list.Add($"UnknownFlag: {mUnknownFlag}");
             list.Add($"FileTime1: {mFileTime1}");
             list.Add($"FileTime2: {mFileTime2}");
             list.Add($"FileTime3: {mFileTime3}");
@@ -39,11 +41,16 @@ namespace Drag_DropDebugger.Items
             mSize = byteReader.read_ushort();
             mVersion = byteReader.read_ushort();
             mExtensionSigniture = byteReader.read_uint();
-            mUnknown = byteReader.read_uint();
-            mFileTime1 = byteReader.read_uint64();
-            mFileTime2 = byteReader.read_uint64();
-            mFileTime3 = byteReader.read_uint64();
-            mFirstExtensionBlockOffset = byteReader.read_uint();
+            mUnknownFlag = byteReader.read_uint();
+            if ((mUnknownFlag & 0x10) == 0x10)
+            {
+                mFileTime1 = byteReader.read_uint64();
+                mFileTime2 = byteReader.read_uint64();
+                mFileTime3 = byteReader.read_uint64();
+
+                mFirstExtensionBlockOffset = byteReader.read_ushort();
+
+            }
 
             TabHelper.AddStringListTab(childTab, "Header", toStringList(), 0);
         }
