@@ -94,11 +94,13 @@ namespace Drag_DropDebugger.DataHandlers
 
         }
 
-        public static void Handle(TabControl ParentTab, MemoryStream dropData, string typeName)
+        public static TabControl Handle(TabControl ParentTab, MemoryStream dropData)
         {
             TabControl childTabCtrl = TabHelper.AddSubTab(ParentTab, "ShellIDListArray");
             ByteReader byteReader = new ByteReader(dropData.ToArray());
             CIDA_Structure _cida = new CIDA_Structure(childTabCtrl,byteReader);
+
+            return childTabCtrl;
         }
     }
 }
