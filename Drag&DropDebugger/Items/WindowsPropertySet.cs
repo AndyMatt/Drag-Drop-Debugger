@@ -14,9 +14,21 @@ namespace Drag_DropDebugger.Items
         string mVersion;
         public Guid mClassID;
         //SimplePropertyRecord mRecord;
-        dynamic mPropertySet;
+        object? mPropertySet;
 
         const uint mVersionSize = 4;
+
+        static Dictionary<Guid, Type> ClassIDs = new Dictionary<Guid, Type>()
+        {
+            {new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), typeof(ApplicationShellPropertySets)},
+            {new Guid("B9B4B3FC-2B51-4A42-B5D8-324146AFCF25"), typeof(TargetParsingPath)},
+            {new Guid("F29F85E0-4FF9-1068-AB91-08002B27B3D9"), typeof(SummaryInformationPropertySet)},
+            {new Guid("B725F130-47EF-101A-A5F1-02608C9EEBAC"), typeof(CommonOpenProperties)},
+            {new Guid("86D40B4D-9069-443C-819A-2A54090DCCEC"), typeof(TileProperties)},
+            {new Guid("446D16B1-8DAD-4870-A748-402EA43D788C"), typeof(SystemProperties)},
+            {new Guid("FFAE9DB7-1C8D-43FF-818C-84403AA3732D"), typeof(SourcePackageFamilyName)},
+            {new Guid("0DED77B3-C614-456C-AE5B-285B38D7B01B"), typeof(LauncherProperties)},
+        };
 
         public WindowsPropertySet(TabControl tabCtrl, ByteReader byteReader, int index = -1)
         {
@@ -30,13 +42,10 @@ namespace Drag_DropDebugger.Items
             mVersion = propertyReader.read_AsciiString(mVersionSize);
             mClassID = propertyReader.read_guid();
 
-            if (mClassID.ToString().ToUpper() == "9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3")
+            if (ClassIDs.ContainsKey(mClassID))
             {
-                ApplicationShellPropertySets.Handle(childTab, propertyReader);
-            }
-            else if (mClassID.ToString().ToUpper() == "B9B4B3FC-2B51-4A42-B5D8-324146AFCF25")
-            {
-                mPropertySet = new TargetParsingPath(childTab, propertyReader);
+                Type ClassType = ClassIDs[mClassID];
+                mPropertySet = Activator.CreateInstance(ClassType, childTab, propertyReader);
             }
             else
             {
