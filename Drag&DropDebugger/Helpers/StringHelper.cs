@@ -73,14 +73,6 @@ namespace Drag_DropDebugger.Helpers
             List<string> list = new List<string>();
             if (classObj != null)
             {
-                /*
-                PropertyInfo[] properties = (classObj.GetType()).GetProperties();
-                foreach (PropertyInfo property in properties)
-                {
-                    var value = property.GetValue(classObj);
-                    list.Add($"{property.Name}: {ParsepropertyValue(value)}");
-                }
-                */
                 FieldInfo[] fieldInfo = classObj.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 foreach (FieldInfo field in fieldInfo)
                 {
