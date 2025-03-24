@@ -59,7 +59,12 @@ namespace Drag_DropDebugger
                 }
             }
 
-            TabHelper.AddStringListTab(tabCtrl, "Summary", formats, 0);
+            Dictionary<String, Object> mSummaryData = new Dictionary<String, Object>();
+            for (int i = 0; i < values.Length; i++)
+            {
+                mSummaryData.Add(formats[i], values[i]);
+            }
+            TabHelper.AddDataGridTab(tabCtrl, "Summary", mSummaryData, 0);
             tabControlParent.SelectedIndex = tabControlParent.Items.Count - 1;
         }
     }
