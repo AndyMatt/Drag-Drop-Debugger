@@ -1,8 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Drag_DropDebugger.Helpers
 {
@@ -58,12 +60,36 @@ namespace Drag_DropDebugger.Helpers
             return (ulong)low << 32 | hi;
         }
 
+        public long read_int64(bool advance = true)
+        {
+            int hi = read_int();
+            int low = read_int();
+
+            return (long)low << 32 | hi;
+        }
+
         public uint read_uint(bool advance = true)
         {
             uint result = (uint)bytes[_iterator + 3] << 24 | (uint)bytes[_iterator + 2] << 16 | (uint)bytes[_iterator + 1] << 8 | bytes[_iterator];
             if (advance)
                 _iterator += sizeof(uint);
             return result;
+        }
+
+        public int read_int(bool advance = true)
+        {
+            int result = bytes[_iterator + 3] << 24 | bytes[_iterator + 2] << 16 | bytes[_iterator + 1] << 8 | bytes[_iterator];
+            if (advance)
+                _iterator += sizeof(uint);
+            return result;
+        }
+
+        public bool read_bool(bool advance = true)
+        {
+            uint result = (uint)bytes[_iterator + 3] << 24 | (uint)bytes[_iterator + 2] << 16 | (uint)bytes[_iterator + 1] << 8 | bytes[_iterator];
+            if (advance)
+                _iterator += sizeof(uint);
+            return result == 0 ? false : true;
         }
 
 
@@ -176,6 +202,25 @@ namespace Drag_DropDebugger.Helpers
         {
             uint nullTerminator = read_uint();
             return nullTerminator == 0;
+        }
+
+        public object? marshal_toObject(Type objType, uint objSize)
+        {
+            if (GetRemainingLength() < objSize)
+            {
+                return null;
+            }
+
+            byte[] bytes = read_bytes(objSize, false);
+            IntPtr marshalPointer = IntPtr.Zero;
+            marshalPointer = Marshal.AllocHGlobal(bytes.Length);
+            Marshal.Copy(bytes, 0, marshalPointer, bytes.Length);
+            return Marshal.PtrToStructure(marshalPointer, objType);
+        }
+
+        private int GetRemainingLength()
+        {
+            return bytes.Length - (int)_iterator;
         }
     }
 }
