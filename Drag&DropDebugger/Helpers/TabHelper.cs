@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,6 +16,7 @@ using System.Windows.Data;
 using System.Reflection;
 using System.Reflection.PortableExecutable;
 using Drag_DropDebugger.UI;
+using TheArtOfDev.HtmlRenderer.WPF;
 
 namespace Drag_DropDebugger.Helpers
 {
@@ -235,6 +236,39 @@ namespace Drag_DropDebugger.Helpers
             {
                 tabCtrl.Items.Insert(indexPos, newTab);
             }
+
+        }
+
+        public static TabItem AddHTMLTab(TabControl tabCtrl, string Label, String html, int indexPos = -1)
+        {
+            HtmlPanel htmlPanel = new HtmlPanel()
+            {
+                Text = html
+            };
+
+            Grid grid = new Grid()
+            {
+                Children = { htmlPanel }
+            };
+
+            TabItem newTab = new TabItem()
+            {
+                Header = Label,
+                Height = 20,
+                VerticalAlignment = VerticalAlignment.Top,
+                Content = grid
+            };
+
+            if (indexPos == -1 || tabCtrl.Items.Count == 0)
+            {
+                tabCtrl.Items.Add(newTab);
+            }
+            else
+            {
+                tabCtrl.Items.Insert(indexPos, newTab);
+            }
+
+            return newTab;
 
         }
 
