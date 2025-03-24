@@ -210,6 +210,34 @@ namespace Drag_DropDebugger.Helpers
             }
         }
 
+        public static void AddDataGridTab(TabControl tabCtrl, string Label, Dictionary<String, Object> data, int indexPos = -1)
+        {
+            DictionaryGridView dataGrid = new DictionaryGridView(data);
+
+            Grid grid = new Grid()
+            {
+                Children = { dataGrid }
+            };
+
+            TabItem newTab = new TabItem()
+            {
+                Header = Label,
+                Height = 20,
+                VerticalAlignment = VerticalAlignment.Top,
+                Content = grid
+            };
+
+            if (indexPos == -1 || tabCtrl.Items.Count == 0)
+            {
+                tabCtrl.Items.Add(newTab);
+            }
+            else
+            {
+                tabCtrl.Items.Insert(indexPos, newTab);
+            }
+
+        }
+
         private static void ListBox_KeyDown(object sender, KeyEventArgs e)
         {
             if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && e.Key == Key.C)
