@@ -1,24 +1,7 @@
-using System.IO;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using WpfHexaEditor.Core;
-using WpfHexaEditor;
-using Microsoft.Win32;
-using System.Windows.Ink;
-using System.Reflection.PortableExecutable;
-using System.Runtime.Serialization.Formatters.Binary;
-using WpfHexaEditor.Core.MethodExtention;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography.Xml;
 using Drag_DropDebugger.Helpers;
+using Drag_DropDebugger.DataHandlers;
 
 namespace Drag_DropDebugger
 {
@@ -27,7 +10,6 @@ namespace Drag_DropDebugger
     /// </summary>
     public partial class MainWindow : Window
     {
-
         static int DropDataCount = 0;
         public MainWindow()
         {
@@ -35,12 +17,23 @@ namespace Drag_DropDebugger
             AllowDrop = true;
         }
 
+        static Dictionary<string, Type> Handlers = new Dictionary<string, Type>()
+        {
+            {"FileGroupDescriptorW", typeof(FileGroupDescriptor)},
+            {"Shell IDList Array", typeof(ShellIDListArray)},
+            {"DragImageBits", typeof(DragImageBits)},
+            {"UniformResourceLocatorW", typeof(HTMLHandler)},
+            {"text/x-moz-url", typeof(HTMLHandler)},
+            {"UniformResourceLocator", typeof(HTMLHandler)},
+            {"chromium/x-renderer-taint", typeof(HTMLHandler)},
+            {"text/html", typeof(HTMLHandler)},
+        };
         private void Window_Drop(object sender, DragEventArgs e)
         {
             TabControl tabCtrl = TabHelper.AddSubTab(tabControlParent, "Drop Data #" + ++DropDataCount);
 
             string[] formats = e.Data.GetFormats();
-            TabHelper.AddStringListTab(tabCtrl, "Summary", formats);
+            object[] values = new object[formats.Length];
             
             for (int i = 0; i < formats.Length; i++)
             {
@@ -48,35 +41,25 @@ namespace Drag_DropDebugger
                 {
                     try
                     {
-                        if (formats[i] == "FileGroupDescriptorW")
-                        {
-                            DataHandlers.FileGroupDescriptor.Handle(tabCtrl, e.Data);
-                        }
-                        else if(formats[i] == "Shell IDList Array")
-                        {
-                            dynamic filedrop = e.Data.GetData(formats[i]);
-                            DataHandlers.ShellIDListArray.Handle(tabCtrl, filedrop, formats[i]);
+                        dynamic filedrop = e.Data.GetData(formats[i]);
+                        if (Handlers.ContainsKey(formats[i])) {
+                            Type ClassType = Handlers[formats[i]];
+                            dynamic handler = Activator.CreateInstance(ClassType, tabCtrl, filedrop, formats[i]);
+                            values[i] = handler.mTabReference;
                         }
                         else
                         {
-                            dynamic filedrop = e.Data.GetData(formats[i]);
-                            if (filedrop is MemoryStream)
-                            {
-                                TabHelper.AddRawDataTab(tabCtrl, ((MemoryStream)filedrop).ToArray(), formats[i]);
-                            }
-                            else if(filedrop is string[])
-                            {
-                                TabHelper.AddStringListTab(tabCtrl, "String Data", filedrop);
-                            }
+                            values[i] = FallbackHandler.Handle(tabCtrl, filedrop, formats[i]);
                         }
                     }
                     catch (Exception ex)
                     {
-                        TabHelper.AddStringTab(tabCtrl, formats[i], ex.Message);
+                        values[i] = $"Error {ex.Message}";
                     }
                 }
             }
 
+            TabHelper.AddStringListTab(tabCtrl, "Summary", formats, 0);
             tabControlParent.SelectedIndex = tabControlParent.Items.Count - 1;
         }
     }
