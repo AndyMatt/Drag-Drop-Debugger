@@ -56,56 +56,6 @@ namespace Drag_DropDebugger.DataHandlers
             mTabReference = childTab;
         }
 
-        [System.Runtime.InteropServices.DllImport("gdi32.dll")]
-        public static extern bool DeleteObject(IntPtr hObject);
-
-        private static BitmapImage? Bitmap2BitmapImage(Bitmap bitmap)
-        {
-            IntPtr hBitmap = bitmap.GetHbitmap();
-            BitmapImage? retval = null;
-
-            try
-            {
-                retval = (BitmapImage)Imaging.CreateBitmapSourceFromHBitmap(
-                             hBitmap,
-                             IntPtr.Zero,
-                             Int32Rect.Empty,
-                             BitmapSizeOptions.FromEmptyOptions());
-            }
-            catch(Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
-            finally
-            {
-                DeleteObject(hBitmap);
-            }
-
-            return retval;
-        }
-
-        [DllImport("kernel32.dll", EntryPoint = "RtlMoveMemory")]
-        public static extern void CopyMemory(IntPtr Destination, IntPtr Source, uint Length);
-
-        public static BitmapSource FromNativePointer(IntPtr pData, int w, int h, int ch)
-        {
-            System.Windows.Media.PixelFormat format = PixelFormats.Default;
-
-            if (ch == 1) format = PixelFormats.Gray8; //grey scale image 0-255
-            if (ch == 3) format = PixelFormats.Bgr24; //RGB
-            if (ch == 4) format = PixelFormats.Bgra32; //RGB + alpha
-
-
-            WriteableBitmap wbm = new WriteableBitmap(w, h, 96, 96, format, null);
-            CopyMemory(wbm.BackBuffer, pData, (uint)(w * h * ch));
-
-            wbm.Lock();
-            wbm.AddDirtyRect(new Int32Rect(0, 0, wbm.PixelWidth, wbm.PixelHeight));
-            wbm.Unlock();
-
-            return wbm;
-        }
-
         public static BitmapSource FromArray(byte[] data, int w, int h, int ch)
         {
             System.Windows.Media.PixelFormat format = PixelFormats.Default;
