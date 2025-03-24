@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -211,7 +211,7 @@ namespace Drag_DropDebugger.Helpers
                 return null;
             }
 
-            byte[] bytes = read_bytes(objSize, false);
+            byte[] bytes = read_bytes(objSize);
             IntPtr marshalPointer = IntPtr.Zero;
             marshalPointer = Marshal.AllocHGlobal(bytes.Length);
             Marshal.Copy(bytes, 0, marshalPointer, bytes.Length);
