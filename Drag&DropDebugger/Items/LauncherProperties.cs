@@ -29,7 +29,7 @@ namespace Drag_DropDebugger.Items
         class LauncherProperty
         {
             uint mSize;
-            uint mPropertyType;
+            PropertyTypes mPropertyType;
             byte _buffer;
             uint mVariableType;
             uint mDataSize;
@@ -38,7 +38,7 @@ namespace Drag_DropDebugger.Items
             public LauncherProperty(TabControl parentTab, ByteReader byteReader)
             {
                 mSize = byteReader.read_uint();
-                mPropertyType = byteReader.read_uint();
+                mPropertyType = (PropertyTypes)byteReader.read_uint();
                 _buffer = byteReader.read_byte();
                 mVariableType = byteReader.read_uint();
 
@@ -62,7 +62,7 @@ namespace Drag_DropDebugger.Items
                         break;
                 }
 
-                string _typeName = Enum.GetName(((PropertyTypes)mPropertyType).GetType(), (PropertyTypes)mPropertyType);
+                string _typeName = Enum.GetName(mPropertyType.GetType(), mPropertyType);
 
                 TabHelper.AddStringListTab(parentTab, _typeName, new string[]
                 {
