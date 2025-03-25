@@ -23,14 +23,14 @@ namespace Drag_DropDebugger.Items
                 $"GUID: {{{guid.ToString()}}}",
                 $"Path: {SpecialPath}"}, 0);
 
-            ByteReader byteBlock = new ByteReader(byteReader.read_bytes(byteReader.scan_ushort()));
-            if (byteBlock.scan_uint(ExtensionSignitureOffset) == 0xBEEF0026)
+            if (byteReader.scan_uint(ExtensionSignitureOffset) == 0xBEEF0026)
             {
-                mExtensionBlock = new RootFolderExtensionBlock(parentTab, byteBlock);
-            }
-            else if (byteBlock.scan_uint(KnownFolderIDOffset) == 0x23FEBBEE)
-            {
-                UserPropertyViewItem propertyView = new UserPropertyViewItem(parentTab, byteBlock);
+                mExtensionBlock = new RootFolderExtensionBlock(parentTab, byteReader);
+
+                if (byteReader.scan_uint(KnownFolderIDOffset) == 0x23FEBBEE)
+                {
+                    UserPropertyViewItem propertyView = new UserPropertyViewItem(parentTab, byteReader);
+                }
             }
 
             while(byteReader.scan_ushort() != 0x0)
