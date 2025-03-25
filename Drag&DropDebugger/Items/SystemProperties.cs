@@ -10,7 +10,7 @@ using System.Windows.Controls;
 namespace Drag_DropDebugger.Items
 {
     //{446D16B1-8DAD-4870-A748-402EA43D788C}
-    internal class SystemProperties 
+    internal class SystemProperties : TabbedClass
     {
         enum PropertyTypes
         {
@@ -19,15 +19,17 @@ namespace Drag_DropDebugger.Items
         }
 
         const ushort VT_UI8 = 0x015;
-        const ushort VT_GUID = 0x0048;
+        const ushort VT_CLSID = 0x0048;
 
-        class SystemProperty
+        class SystemProperty : TabbedClass
         {
             uint mSize;
             uint mPropertyType;
             byte _buffer;
             uint mVariableType;
             object mData;
+            string mVariableName;
+
 
             public SystemProperty(TabControl parentTab, ByteReader byteReader)
             {
@@ -36,30 +38,31 @@ namespace Drag_DropDebugger.Items
                 _buffer = byteReader.read_byte();
                 mVariableType = byteReader.read_uint();
 
-                string DataString = "";
+                object _Data = "";
                 switch (mVariableType)
                 {
                     case VT_UI8:
                         mData = byteReader.read_uint64();
-                        DataString = $"Value: {mData.ToString()} (0x{((UInt64)mData).ToString("X").PadLeft(16, '0')})";
+                        mVariableName = "Value";
+                        _Data = $"{mData.ToString()} (0x{((UInt64)mData).ToString("X").PadLeft(16, '0')})";
                         break;
 
-                    case VT_GUID:
+                    case VT_CLSID:
                         mData = byteReader.read_guid();
-                        DataString = $"GUID: {mData.ToString()}";
+                        mVariableName = "GUID";
+                        _Data = mData;
                         break;
                 }
 
                 string _typeName = Enum.GetName(((PropertyTypes)mPropertyType).GetType(), (PropertyTypes)mPropertyType);
 
-                TabHelper.AddStringListTab(parentTab, _typeName, new string[]
+                mTabReference = TabHelper.AddDataGridTab(parentTab, _typeName, new Dictionary<string, object>()
                 {
-
-                $"Size: {mSize}",
-                $"Type: {_typeName}",
-                $"Buffer: {Convert.ToHexString(new byte[]{_buffer})}",
-                "",
-                DataString });
+                    {"Size", $"{mSize} (0x{mSize.ToString("X")})"},
+                    {"Type",_typeName},
+                    {"Buffer",Convert.ToHexString(new byte[]{_buffer})},
+                    {mVariableName, _Data},
+                }, 0);
             }
         }
 
@@ -74,11 +77,12 @@ namespace Drag_DropDebugger.Items
             {
                 mProperties.Add(new SystemProperty(childTab, byteReader));
             }
+            mTabReference = childTab;
         }
     }
 
     //{FFAE9DB7-1C8D-43FF-818C-84403AA3732D} PropID = 100
-    public class SourcePackageFamilyName
+    public class SourcePackageFamilyName : TabbedClass
     {
         uint mSize;
         uint mPropertyType;
@@ -102,14 +106,15 @@ namespace Drag_DropDebugger.Items
             mStringSize = byteReader.read_uint();
             mString = byteReader.read_UnicodeString();
 
-            TabHelper.AddStringListTab(parentTab, "SourcePackageFamilyName", new string[]
-                {
-                $"Size: {mSize}",
-                $"TypeID: {mPropertyType}",
-                $"Buffer: {Convert.ToHexString(new byte[]{_buffer})}",
-                $"VariableType: {mVariableType}",
-                $"StringLength: {mStringSize}",
-                $"FamilyName:  {mString}" });
+            mTabReference = TabHelper.AddDataGridTab(parentTab, "SourcePackageFamilyName", new Dictionary<string, object>()
+            {
+                {"Size", $"{mSize} (0x{mSize.ToString("X")})"},
+                {"TypeID", mPropertyType},
+                {"Buffer", Convert.ToHexString(new byte[]{_buffer})},
+                {"VariableType", mVariableType },
+                {"StringLength", mStringSize },
+                {"FamilyName", mString },
+            });
         }
     }
 }

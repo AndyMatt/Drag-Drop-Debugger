@@ -8,7 +8,7 @@ using System.Windows.Controls;
 
 namespace Drag_DropDebugger.Items
 {
-    public class RootFolderShellItem
+    public class RootFolderShellItem : TabbedClass
     {
         /* mflagIdentifier
         The volume shell item can be identified by a value of 0x20 after applying a bitmask of 0x70. 
@@ -23,29 +23,35 @@ namespace Drag_DropDebugger.Items
         ushort mSize;
         byte mflagIdentifier;
         string mLabel;
-        FileEntryShellItem? mFileEntry;
+        List<FileEntryShellItem> mFileEntry;
         public RootFolderShellItem(TabControl parentTab, ByteReader byteReader)
         {
             mSize = byteReader.read_ushort();
             mflagIdentifier = byteReader.read_byte();
             int StringSize = mSize - sizeof(ushort) - sizeof(byte);
             mLabel = byteReader.read_AsciiString((uint)StringSize);
-            TabHelper.AddStringListTab(parentTab, "RootFolderShellItem", new string[]
-            {
-                $"Size: {mSize} | 0x{mSize.ToString("X")}",
-                $"Flag Identifier: {mflagIdentifier}",
-                $"Label: {mLabel}"
-            });
 
+            Dictionary<string, object> properties = new Dictionary<string, object>()
+            {
+                {"Size", $"{mSize} (0x{mSize.ToString("X")}"},
+                {"Flag Identifier", mflagIdentifier},
+                {"Label", mLabel}
+            };
+
+            mFileEntry = new List<FileEntryShellItem>();
             while (byteReader.scan_ushort() != 0x0)
             {
                 ushort identifier = byteReader.scan_ushort(2);
 
                 if ((identifier & 0x70) == 0x30)
                 {
-                    mFileEntry = new FileEntryShellItem(parentTab, byteReader);
+                    FileEntryShellItem fileEntry = new FileEntryShellItem(parentTab, byteReader);
+                    properties.Add(fileEntry.GetPropertyString(), fileEntry.mTabReference);
+                    mFileEntry.Add(fileEntry);
                 }
             }
+
+            mTabReference = TabHelper.AddDataGridTab(parentTab, "RootFolderShellItem", properties, 0);
         }
     }
 }

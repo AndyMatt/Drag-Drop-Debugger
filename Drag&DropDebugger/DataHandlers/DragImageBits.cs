@@ -17,10 +17,8 @@ using WpfHexaEditor.Core;
 
 namespace Drag_DropDebugger.DataHandlers
 {
-    public class DragImageBits
+    public class DragImageBits : TabbedClass
     {
-        public object mTabReference;
-
         public DragImageBits(TabControl parentTab, MemoryStream dropData, string dataType)
         {
             TabControl childTab = TabHelper.AddSubTab(parentTab, "DragImageBits");

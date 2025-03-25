@@ -8,7 +8,7 @@ using System.Windows.Controls;
 
 namespace Drag_DropDebugger.Items
 {
-    public class RootFolderExtensionBlock //0xBEEF0026
+    public class RootFolderExtensionBlock : TabbedClass//0xBEEF0026
     {
         ushort mSize;
         ushort mVersion; // Seen 0x0001
@@ -20,20 +20,6 @@ namespace Drag_DropDebugger.Items
 
         ushort mListSize;
         ushort mFirstExtensionBlockOffset;
-
-        public string[] toStringList()
-        {
-            List<string> list = new List<string>();
-            list.Add($"Size: {mSize} (0x{mSize.ToString("X")})");
-            list.Add($"Version: {mVersion}");
-            list.Add($"ExtensionSigniture: 0x{mExtensionSigniture.ToString("X2")}");
-            list.Add($"UnknownFlag: {mUnknownFlag}");
-            list.Add($"FileTime1: {mFileTime1}");
-            list.Add($"FileTime2: {mFileTime2}");
-            list.Add($"FileTime3: {mFileTime3}");
-            list.Add($"FirstExtensionBlockOffset: {mFirstExtensionBlockOffset}");
-            return list.ToArray();
-        }
 
         public RootFolderExtensionBlock(TabControl parentTab, ByteReader byteReader)
         {
@@ -52,7 +38,19 @@ namespace Drag_DropDebugger.Items
 
             }
 
-            TabHelper.AddStringListTab(childTab, "Header", toStringList(), 0);
+            TabHelper.AddDataGridTab(childTab, "Header", new Dictionary<string, object>()
+            {
+                {"Size", $"{mSize} (0x{mSize.ToString("X")}"},
+                {"Version", mVersion},
+                {"ExtensionSigniture", $"0x{mExtensionSigniture.ToString("X2")}"},
+                {"UnknownFlag", mUnknownFlag},
+                {"FileTime1", mFileTime1},
+                {"FileTime2", mFileTime2},
+                {"FileTime3", mFileTime3},
+                {"FirstExtensionBlockOffset", $"{mFirstExtensionBlockOffset} (0x{mFirstExtensionBlockOffset.ToString("X")}"},
+            }, 0);
+
+            mTabReference = childTab;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Drag_DropDebugger.Helpers;
+using Drag_DropDebugger.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Windows.Controls;
 
 namespace Drag_DropDebugger.Items
 {
-    public class UserPropertyViewItem //0x23FEBBEE
+    public class UserPropertyViewItem : TabbedClass //0x23FEBBEE
     {
         class UserPropertyViewData
         {
@@ -39,31 +39,18 @@ namespace Drag_DropDebugger.Items
             mData.mIdentifierSize = viewReader.read_ushort();
             mData.mKnownFolder = viewReader.read_guid();
 
-            AddTab(childTab);
-        }
-
-        void AddTab(TabControl parentTab)
-        {
-            if (mData != null)
-            {
-                string KnownFolderName = NativeMethods.GetFolderFromKnownFolderGUID(mData.mKnownFolder);
-                TabHelper.AddStringListTab(parentTab, "Properties", new string[]
+            mTabReference = TabHelper.AddDataGridTab(parentTab, "Properties", new Dictionary<string, object>()
                 {
-                    $"Size: {mSize}",
-                    $"ClassTypeID: {mClassTypeID}",
-                    $"UnknownField: {mUnknown}",
-                    "",
-                    "UserPropertyViewData",
-                    $"  Size: {mData.mSize}",
-                    $"  DataSigniture: 0x{mData.mDataSigniture.ToString("X")}",
-                    $"  PropertyStoreDataSize: {mData.mPropertyStoreDataSize}",
-                    $"  IdentifierSize: {mData.mIdentifierSize}",
-                    $"  KnownFolder",
-                    $"    GUID: {mData.mKnownFolder.ToString()}",
-                    $"    Path: {KnownFolderName}",
-
-                });
-            }
+                    {"Size", $"{mSize} (0x{mSize.ToString("X")})" },
+                    {"ClassTypeID", mClassTypeID },
+                    {"UnknownField", mUnknown },
+                    {"UserPropertyView.Size", $"{mData.mSize} (0x{mData.mSize.ToString("X")})" },
+                    {"UserPropertyView.DataSigniture", $"0x{mData.mDataSigniture.ToString("X")}" },
+                    {"UserPropertyView.PropertyStoreDataSize", mData.mPropertyStoreDataSize },
+                    {"UserPropertyView.IdentifierSize", mData.mIdentifierSize},
+                    {"UserPropertyView.KnownFolder.GUID", mData.mKnownFolder.ToString()},
+                    {"UserPropertyView.KnownFolder.Path", NativeMethods.GetFolderFromKnownFolderGUID(mData.mKnownFolder) }
+                }, 0);
         }
     }
 }

@@ -8,23 +8,13 @@ using System.Windows.Controls;
 
 namespace Drag_DropDebugger.Items
 {
-    public class ApplicationShellExtensionBlock //0xBEEF0027
+    public class ApplicationShellExtensionBlock: TabbedClass //0xBEEF0027
     {
         ushort mSize;
         ushort mVersion; // Seen 0x0000
         uint mExtensionSigniture; //0xBEEF0027
         WindowsPropertySet? mPropertySet;
         uint mTerminator;
-
-        public string[] toStringList()
-        {
-            List<string> list = new List<string>();
-            list.Add($"Size: {mSize} (0x{mSize.ToString("X")})");
-            list.Add($"Version: {mVersion}");
-            list.Add($"ExtensionSigniture: 0x{mExtensionSigniture.ToString("X2")}");
-            list.Add($"Terminator: {mTerminator}");
-            return list.ToArray();
-        }
 
         public ApplicationShellExtensionBlock(TabControl parentTab, ByteReader byteReader)
         {
@@ -37,7 +27,16 @@ namespace Drag_DropDebugger.Items
 
             mTerminator = byteReader.read_uint();
 
-            TabHelper.AddStringListTab(childTab, "Header", toStringList(), 0);
+            TabHelper.AddDataGridTab(childTab, "Header", new Dictionary<string, object>()
+            {
+                {"Size", mSize},
+                {"Version", mVersion},
+                {"ExtensionSigniture", $"0x{mExtensionSigniture.ToString("X2")}"},
+                {"Terminator", mTerminator},
+                {"PropertySets", mPropertySet.mTabReference }
+            }, 0);
+
+            mTabReference = childTab;
         }
     }
 }

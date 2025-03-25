@@ -1,4 +1,4 @@
-﻿using Drag_DropDebugger.Helpers;
+using Drag_DropDebugger.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Windows.Controls;
 
 namespace Drag_DropDebugger.Items
 {
-    public class FileEntryShellItem
+    public class FileEntryShellItem : TabbedClass
     {
         ushort mSize;
         byte mClassType;
@@ -41,15 +41,19 @@ namespace Drag_DropDebugger.Items
                 mExtensionBlock = new FileEntryExtensionBlock(childTab, byteReader, mClassType);
             }
 
-            TabHelper.AddStringListTab(childTab, "Header", new string[]{
+            TabHelper.AddDataGridTab(childTab, "Header", new Dictionary<string, object>()
+            {
+                {"Size", $"{mSize} (0x{mSize.ToString("X")})"},
+                {"Class Type", mClassType},
+                {"Unknown", mUnknown },
+                {"FileSize", mFileSize },
+                {"Last Modification Date", mLastModificationTime },
+                {"FileAttributes",mFileAttributes },
+                {"PrimaryName", mPrimaryName },
+                {"ExtensionBlock", mExtensionBlock.mTabReference },
+            },0);
 
-                $"Size: {mSize} (0x{mSize.ToString("X")})",
-                $"ClassType: {mClassType}",
-                $"Unknown: {mUnknown}",
-                $"FileSize: {mFileSize}",
-                $"LastModificationDate: {mLastModificationTime}",
-                $"FileAttributes: {mFileAttributes}",
-                $"PrimaryName: {mPrimaryName}" }, 0);
+            mTabReference = childTab;
         }
 
         string GetClassTypeString(byte _classTypeID)
@@ -58,6 +62,16 @@ namespace Drag_DropDebugger.Items
                 return "DirectoryShellItem";
 
             return "FileEntryShellItem";
+        }
+
+        public string GetPropertyString()
+        {
+            string fileName = mExtensionBlock != null ? mExtensionBlock.GetFileName() : mPrimaryName;
+
+            if ((mClassType & 0x1) == 0x1)
+                return $"DirectoryShellItem({fileName})";
+
+            return $"FileEntryShellItem({fileName})";
         }
 
         const uint ExtensionSignitureOffset = 4;

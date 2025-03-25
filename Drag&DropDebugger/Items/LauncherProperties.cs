@@ -9,7 +9,7 @@ using System.Windows.Controls;
 namespace Drag_DropDebugger.Items
 {
     //{0DED77B3-C614-456C-AE5B-285B38D7B01B}
-    internal class LauncherProperties
+    public class LauncherProperties : TabbedClass
     {
         enum PropertyTypes
         {
@@ -26,14 +26,14 @@ namespace Drag_DropDebugger.Items
         const ushort VT_UI4 = 0x013;
         const ushort VT_LPWSTR = 0x001F;
 
-        class LauncherProperty
+        class LauncherProperty : TabbedClass
         {
             uint mSize;
             PropertyTypes mPropertyType;
             byte _buffer;
             uint mVariableType;
             uint mDataSize;
-            object mData;
+            object? mData;
 
             public LauncherProperty(TabControl parentTab, ByteReader byteReader)
             {
@@ -62,17 +62,13 @@ namespace Drag_DropDebugger.Items
                         break;
                 }
 
-                string _typeName = Enum.GetName(mPropertyType.GetType(), mPropertyType);
-
-                TabHelper.AddStringListTab(parentTab, _typeName, new string[]
+                mTabReference = TabHelper.AddDataGridTab(parentTab, Enum.GetName(mPropertyType.GetType(), mPropertyType), new Dictionary<string, object>()
                 {
-
-            $"Size: {mSize}",
-            $"Type: {_typeName}",
-            $"Buffer: {Convert.ToHexString(new byte[]{_buffer})}",
-            $"VariableType: {mVariableType}",
-            "",
-            DataString });
+                    {"Size", $"{mSize} (0x{mSize.ToString("X")})"},
+                    {"Type", Enum.GetName(mPropertyType.GetType(), mPropertyType)},
+                    {"Buffer", Convert.ToHexString(new byte[]{_buffer}) },
+                    {"VariableType", mVariableType },
+                }, 0);
             }
         }
 
@@ -87,6 +83,8 @@ namespace Drag_DropDebugger.Items
             {
                 mProperties.Add(new LauncherProperty(childTab, byteReader));
             }
+
+            mTabReference = childTab;
         }
     }
 }
