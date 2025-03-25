@@ -50,12 +50,86 @@ namespace Drag_DropDebugger.Items
                 {0x0040, "VT_FILETIME" },
                 {0x0042, "VT_STREAM" },
                 {0x0047, "VT_CF"},
-                {0x0048, "VT_GUID"}, //UNVERIFIED 
-                {0x1000, "VT_ARRAY" },
+                {0x0048, "VT_CLSID"}, 
+                {0x1000, "VT_VECTOR" },
                 {0x2000, "VT_ARRAY" },
                 {0x4000, "VT_BYREF" }
         };
 
+        public static string GetVariantType(uint id)
+        {
+            string result = "";
+            uint _id = (id & 0xFFF);
+            uint _array = (id & 0x7000);
+
+            if (TypeVar.ContainsKey(_id))
+            {
+                result = GetVariantType(TypeVar[_id]);
+            }
+
+            if (_array != 0)
+            {
+                result += "[]";
+            }
+            return result;
+        }
+
+        private static string GetVariantType(string type)
+        {          
+            switch (type)
+            {
+                case "VT_NULL": return "";
+                case "VT_EMPTY": return "";
+                case "VT_I2": return "short / int16";
+                case "VT_I4": return "long / int32";
+                case "VT_R4": return "float";
+                case "VT_R8": return "double";
+                case "VT_CY": return "currency";
+                case "VT_DATE": return "date";
+                case "VT_BSTR": return "string";
+                case "VT_DISPATCH": return "IDispatch";
+                case "VT_ERROR": return "SCODE";
+                case "VT_BOOL": return "bool";
+                case "VT_VARIANT": return "pointer";
+                case "VT_UNKNOWN": return "IUnknown";
+                case "VT_DECIMAL": return "decimal";
+                case "VT_I1": return "char";
+                case "VT_UI1": return "unsigned char";
+                case "VT_UI2": return "unsigned short / unsigned int16";
+                case "VT_UI4": return "unsigned long / unsigned int32";
+                case "VT_I8": return "longlong / int64";
+                case "VT_UI8": return "unsigned longlong / unsigned int64";
+                case "VT_INT": return "int";
+                case "VT_UINT": return "unsigned int";
+                case "VT_VOID": return "void";
+                case "VT_HRESULT": return "HRESULT";
+                case "VT_PTR": return "pointer";
+                case "VT_SAFEARRAY": return "Array";
+                case "VT_CARRAY": return "Array";
+                case "VT_USERDEFINED": return "user defined type";
+                case "VT_LPSTR": return "string";
+                case "VT_LPWSTR": return "string";
+                case "VT_RECORD": return "user defined type";
+                case "VT_INT_PTR": return "int*";
+                case "VT_UINT_PTR": return "unsigned int*";
+                case "VT_FILETIME": return "FILETIME";
+                case "VT_BLOB": return "byte[]";
+                case "VT_STREAM": return "stream name";
+                case "VT_STORAGE": return "storage name";
+                case "VT_BLOB_OBJECT": return "blob object";
+                case "VT_STREAMED_OBJECT": return "stream object";
+                case "VT_STORED_OBJECT": return "storage object";
+                case "VT_CF": return "clipboard format";
+                case "VT_CLSID": return "CLSID/GUID";
+                case "VT_VERSIONED_STREAM": return "stream + GUID";
+                case "VT_BSTR_BLOB": return "Reserved";
+                case "VT_VECTOR": return "Array";
+                case "VT_ARRAY": return "SafeArray*";
+                case "VT_BYREF": return "Void*";
+            }
+
+            return type;
+        }
 
         public static string GetTypeName(uint id)
         {
@@ -64,11 +138,11 @@ namespace Drag_DropDebugger.Items
             uint _id = id;
             if (id >= 0x1000)
             {
-                uint ParentType = id & 0x1100;
+                uint ParentType = id & 0x7000;
                 if (TypeVar.ContainsKey(ParentType))
                     result = $"{TypeVar[ParentType]}|";
 
-                _id = _id & 0x11;
+                _id = _id & 0xFFF;
             }
 
             if (TypeVar.ContainsKey(_id))
@@ -98,7 +172,7 @@ namespace Drag_DropDebugger.Items
 
             if (TypeVar.ContainsKey(_id))
             {
-                result += $"{TypeVar[_id]} (!VARIABLETYPE)";
+                result += $"{TypeVar[_id]} ({GetVariantType(_id)})";
             }
             else
             {
