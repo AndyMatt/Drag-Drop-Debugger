@@ -12,7 +12,7 @@ namespace Drag_DropDebugger.Items
     {
         ushort mSize;
         ushort mVersion; // Seen 0x0001
-        uint mExtensionSigniture; //0xBEEF0027
+        uint mExtensionSigniture; //0xBEEF0026
         uint mUnknownFlag; //0x00000011
         ulong mFileTime1;
         ulong mFileTime2;
