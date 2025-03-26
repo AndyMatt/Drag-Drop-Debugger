@@ -27,16 +27,17 @@ namespace Drag_DropDebugger.Items
         public UserPropertyViewItem(TabControl parentTab, ByteReader byteReader)
         {
             TabControl childTab = TabHelper.AddSubTab(parentTab, "UserPropertyViewItem");
-            mSize = byteReader.read_ushort();
-            mClassTypeID = byteReader.read_byte();
-            mUnknown = byteReader.read_byte();
+            ByteReader viewReader = new ByteReader(byteReader.read_bytes(byteReader.scan_ushort()));
+            mSize = viewReader.read_ushort();
+            mClassTypeID = viewReader.read_byte();
+            mUnknown = viewReader.read_byte();
 
             mData = new UserPropertyViewData();
-            mData.mSize = byteReader.read_ushort();
-            mData.mDataSigniture = byteReader.read_uint();
-            mData.mPropertyStoreDataSize = byteReader.read_ushort();
-            mData.mIdentifierSize = byteReader.read_ushort();
-            mData.mKnownFolder = byteReader.read_guid();
+            mData.mSize = viewReader.read_ushort();
+            mData.mDataSigniture = viewReader.read_uint();
+            mData.mPropertyStoreDataSize = viewReader.read_ushort();
+            mData.mIdentifierSize = viewReader.read_ushort();
+            mData.mKnownFolder = viewReader.read_guid();
 
             AddTab(childTab);
         }
