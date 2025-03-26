@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -39,17 +39,17 @@ namespace Drag_DropDebugger.Helpers
             return childTabCtrl;
         }
 
-        public static HexEditor AddRawDataTab(TabControl tabCtrl, MemoryStream stream, string header = "Raw")
+        public static TabItem AddRawDataTab(TabControl tabCtrl, MemoryStream stream, string header = "Raw")
         {
             return AddRawDataTab(tabCtrl, stream.ToArray(), header);
         }
 
-        public static HexEditor AddRawDataTab(TabControl tabCtrl, byte[] bytes)
+        public static TabItem AddRawDataTab(TabControl tabCtrl, byte[] bytes)
         {
             return AddRawDataTab(tabCtrl, bytes, "Raw");
         }
 
-        public static HexEditor AddRawDataTab(TabControl tabCtrl, byte[] bytes, string Header)
+        public static TabItem AddRawDataTab(TabControl tabCtrl, byte[] bytes, string Header)
         {
             HexEditor newHex = new HexEditor()
             {
@@ -86,10 +86,10 @@ namespace Drag_DropDebugger.Helpers
             File.WriteAllBytes(tempFileName, bytes);
             newHex.FileName = tempFileName;
 
-            return newHex;
+            return newTab;
         }
 
-        public static void AddStringTab(TabControl tabCtrl, string Label, string data)
+        public static TabItem AddStringTab(TabControl tabCtrl, string Label, string data)
         {
             ListBox listBox = new ListBox()
             {
@@ -100,14 +100,6 @@ namespace Drag_DropDebugger.Helpers
 
 
             Grid grid = new Grid();
-
-            grid.Children.Add(new Label()
-            {
-                Content = "String Data:",
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top,
-                Margin = new Thickness(5.0, 0, 0, 0)
-            });
 
             grid.Children.Add(listBox);
 
@@ -120,9 +112,10 @@ namespace Drag_DropDebugger.Helpers
             };
 
             tabCtrl.Items.Add(newTab);
+            return newTab;
         }
 
-        public static void AddStringListTab(TabControl tabCtrl, string Label, string[] data, int indexPos = -1)
+        public static TabItem AddStringListTab(TabControl tabCtrl, string Label, string[] data, int indexPos = -1)
         {
             ListBox listBox = new ListBox()
             {
@@ -144,13 +137,6 @@ namespace Drag_DropDebugger.Helpers
             listBox.KeyDown += ListBox_KeyDown;
             Grid grid = new Grid();
 
-            grid.Children.Add(new Label()
-            {
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top,
-                Margin = new Thickness(5.0, 0, 0, 0)
-            });
-
             grid.Children.Add(listBox);
 
             TabItem newTab = new TabItem()
@@ -169,7 +155,11 @@ namespace Drag_DropDebugger.Helpers
             {
                 tabCtrl.Items.Insert(indexPos, newTab);
             }
+
+            return newTab;
         }
+
+       
 
         private static void ListBox_KeyDown(object sender, KeyEventArgs e)
         {
