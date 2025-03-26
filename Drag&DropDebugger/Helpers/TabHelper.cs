@@ -10,6 +10,12 @@ using System.Windows;
 using WpfHexaEditor.Core;
 using WpfHexaEditor;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
+using static Drag_DropDebugger.MainWindow;
+using System.Windows.Data;
+using System.Reflection;
+using System.Reflection.PortableExecutable;
+using Drag_DropDebugger.UI;
 
 namespace Drag_DropDebugger.Helpers
 {
@@ -159,7 +165,50 @@ namespace Drag_DropDebugger.Helpers
             return newTab;
         }
 
-       
+        public static void AddBitmapTab(TabControl tabCtrl, string Label, BitmapSource bitmap, int indexPos = -1)
+        {
+            Image bitmapImage = new Image()
+            {
+                Source = bitmap,
+                Width = bitmap.Width,
+                Height = bitmap.Height,
+            };
+
+            DrawingBrush BackgroundPNG = new DrawingBrush()
+            {
+                TileMode = TileMode.Tile,
+                Viewport = new Rect(0, 0, 32, 32),
+                ViewportUnits = BrushMappingMode.Absolute,
+                Drawing = new GeometryDrawing()
+                {
+                    Geometry = Geometry.Parse("M0,0 H1 V1 H2 V2 H1 V1 H0Z"),
+                    Brush = new SolidColorBrush(Colors.LightGray),
+                }
+            };
+
+            Grid grid = new Grid()
+            {
+                Background = BackgroundPNG,
+                Children = { bitmapImage }
+            };
+
+            TabItem newTab = new TabItem()
+            {
+                Header = Label,
+                Height = 20,
+                VerticalAlignment = VerticalAlignment.Top,
+                Content = grid,
+            };
+
+            if (indexPos == -1 || tabCtrl.Items.Count == 0)
+            {
+                tabCtrl.Items.Add(newTab);
+            }
+            else
+            {
+                tabCtrl.Items.Insert(indexPos, newTab);
+            }
+        }
 
         private static void ListBox_KeyDown(object sender, KeyEventArgs e)
         {
