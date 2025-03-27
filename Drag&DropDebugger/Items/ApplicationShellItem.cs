@@ -1,6 +1,7 @@
 using static Drag_DropDebugger.DataHandlers.ShellIDListArray;
 using System.Windows.Controls;
 using Drag_DropDebugger.Helpers;
+using Drag_DropDebugger.UI;
 
 namespace Drag_DropDebugger.Items
 {
@@ -18,6 +19,7 @@ namespace Drag_DropDebugger.Items
         ApplicationShellExtensionBlock? mExtensionBlock;
 
         List<WindowsPropertySet> mProperties;
+        PropertySetTab mPropertySetTab;
 
         public ApplicationShellItem(TabControl parentTab, ByteReader byteReader)
         {
@@ -33,6 +35,7 @@ namespace Drag_DropDebugger.Items
             unknown_4 = byteReader.read_ushort();
 
             mProperties = new List<WindowsPropertySet>();
+            mPropertySetTab = new PropertySetTab();
 
             Dictionary<string, object> properties = new Dictionary<string, object>()
             {
@@ -48,9 +51,18 @@ namespace Drag_DropDebugger.Items
 
             while (byteReader.read_uint(false) != 0)
             {
-                WindowsPropertySet set = new WindowsPropertySet(childTab, byteReader, mProperties.Count);
-                properties.Add($"Property Set #{mProperties.Count+1}", set.mTabReference);
-                mProperties.Add(set);
+                mProperties.Add(new WindowsPropertySet(byteReader, mProperties.Count));
+            }
+
+            if (mProperties.Count > 0)
+            {
+                properties.Add(mProperties.Count == 1 ? "Property Set" : "Property Sets", mPropertySetTab);
+                childTab.Items.Add(mPropertySetTab);
+
+                for (int i = 0; i < mProperties.Count; i++)
+                {
+                    mPropertySetTab.AddPropertySet(mProperties[i]);
+                }
             }
 
             byteReader.SetOffset(mPropertyStoreOffset);
@@ -61,6 +73,7 @@ namespace Drag_DropDebugger.Items
             }
 
             TabHelper.AddDataGridTab(childTab, "Properties", properties, 0);
+
 
             mTabReference = childTab;
         }   

@@ -83,11 +83,12 @@ namespace Drag_DropDebugger.Items
         uint mSize;
         byte[] mValue;
         Object? mObj;
+        TabControl? mShellTab;
         public BESTSHORTCUT(TabControl parentTab, ByteReader byteReader)
         {
             mSize = byteReader.read_uint();
             mValue = byteReader.read_bytes(mSize);
-            mObj = ShellItemHandler.Handle(parentTab, new ByteReader(mValue));
+            mObj = ShellItemHandler.Handle(parentTab, new ByteReader(mValue), out mShellTab);
         }
 
         public override string ToString()

@@ -44,6 +44,7 @@ namespace Drag_DropDebugger.UI
 
                     switch (mObject.GetType().Name)
                     {
+                        case "PropertySetTab":
                         case "TabItem":
                             Text = "...";
                             break;
@@ -64,7 +65,7 @@ namespace Drag_DropDebugger.UI
 
             TabItem? GetTabItemFromControl(TabControl tabCtrl)
             {
-                if (tabCtrl.Parent.GetType() == typeof(Grid))
+                if (tabCtrl.Parent != null && tabCtrl.Parent.GetType() == typeof(Grid))
                 {
                     Grid grid = (Grid)tabCtrl.Parent;
                     if (grid.Parent.GetType() == typeof(TabItem))
@@ -115,7 +116,8 @@ namespace Drag_DropDebugger.UI
                 LinkValue link = (LinkValue)SelectedCells[0].Item;
                 if (link.mObject != null)
                 {
-                    if (link.mObject.GetType() == typeof(TabItem))
+                    if (link.mObject.GetType() == typeof(TabItem) ||
+                        link.mObject.GetType().IsSubclassOf(typeof(TabItem)))
                     {
                         TabItem tabItem = (TabItem)link.mObject;
                         TabControl tabControl = (TabControl)tabItem.Parent;

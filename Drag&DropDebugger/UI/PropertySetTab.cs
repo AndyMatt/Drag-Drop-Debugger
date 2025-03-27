@@ -7,69 +7,65 @@ using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using static Drag_DropDebugger.UI.DictionaryGridView;
+using System.Windows.Input;
+using System.Windows;
+using System.Windows.Media;
 
 namespace Drag_DropDebugger.UI
 {
-    /* <TabControl x:Name="tabControlParent" Background="{x:Null}">
-            <TabItem Header="Property Sets">
-                <DockPanel LastChildFill="true" Margin="5,5,5,5">
-                    <ListBox x:Name="listBox" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,0,5,0"/>
-
-                    <TabControl x:Name="tabControl">
-                        <TabItem Header="TabItem">
-                            <Grid Background="#FFE5E5E5"/>
-                        </TabItem>
-                        <TabItem Header="TabItem">
-                            <Grid Background="#FFE5E5E5"/>
-                        </TabItem>
-                    </TabControl>
-
-                </DockPanel>
-            </TabItem>
-        </TabControl>
-    */
+    public delegate void UpdateIndex(int index);
 
     public class PropertySetTab : TabItem
     {
-        public TabControl mPropertyTabControl;
+        public event UpdateIndex onUpdateIndex;
+
         DockPanel mDockPanel;
         List<WindowsPropertySet> mPropertySets;
+        PropertySetListBox mPropertyList;
+        TabControl? mCurrentTabControl;
+        int mCurrentIndex;
         public PropertySetTab()
         {
             mPropertySets = new List<WindowsPropertySet>();
-            mPropertyTabControl = new TabControl();
+          
             mDockPanel = new DockPanel()
             {
                 LastChildFill = true,
                 Margin = new System.Windows.Thickness(5)
             };
+
+            mPropertyList = new PropertySetListBox() { 
+                Margin = new System.Windows.Thickness(0, 0, 5, 0) 
+            };
+            mPropertyList.OnUpdateIndex += UpdateIndexView;
+            mDockPanel.Children.Add(mPropertyList);
+
+            Content = mDockPanel;
+            mCurrentIndex = -1;
+        }
+
+        protected override void OnSelected(RoutedEventArgs e)
+        {
+            if(mPropertySets.Count > 1 && mPropertyList.SelectedIndex == -1)
+            {
+                mPropertyList.SelectedIndex = 0;
+                UpdateIndexView(mPropertyList.SelectedIndex);
+            }
+
+            base.OnSelected(e);
         }
 
         void RefreshUI()
         {
             if (mPropertySets.Count > 1)
             {
-                mDockPanel.Children.Clear();
-                mPropertyTabControl.Items.Clear();
-
-                ListBox mPropertyList = new ListBox() { Margin = new System.Windows.Thickness(0, 0, 5, 0) };
-
-                for (int i = 0; i < mPropertySets.Count; i++)
-                {
-                    mPropertyList.Items.Add(mPropertySets[i].PropertySetName);
-                    mPropertyTabControl.Items.Add(new TabItem() 
-                    { 
-                        Header = mPropertySets[i].PropertySetName,
-                        Content = mPropertySets[i].mTabReference
-                    }
-                    );
-                }
-
-                mDockPanel.Children.Add(mPropertyList);
-                mDockPanel.Children.Add(mPropertyTabControl);
-
                 Header = "Property Sets";
-                Content = mDockPanel;
+
+                if (Content != mDockPanel)
+                    Content = mDockPanel;
+
+                UpdateIndexView(0);
             }
             else if(mPropertySets.Count == 1)
             {
@@ -79,29 +75,35 @@ namespace Drag_DropDebugger.UI
         }
 
         public void AddPropertySet(WindowsPropertySet propertySet)
-        {
-            /*
-            if(propertySet.mTabReference.GetType() == typeof(TabControl))
-            {
-                TabControl tabCtrl = (TabControl)propertySet.mTabReference;
-
-                if(tabCtrl.Parent != null && tabCtrl.Parent.GetType() == typeof(TabItem))
-                {
-                    TabItem tabItem = (TabItem)tabCtrl.Parent;
-                    tabItem.Content = null;
-                }
-            }*/
-
-            /*mTabItem = new TabItem()
-            {
-                Header = propertySet.PropertySetName,
-                Content = propertySet.mTabReference
-            };*/
+        {           
+            mPropertyList.Items.Add(propertySet.PropertySetName);
             mPropertySets.Add(propertySet);
-            //AddChild(mTabItem);
             RefreshUI();
         }
 
-        
+        private void UpdateIndexView(int index)
+        {
+            if (mCurrentIndex == index)
+                return;
+
+            if(mCurrentTabControl != null)
+                mDockPanel.Children.Remove(mCurrentTabControl);
+
+            mCurrentTabControl = (TabControl)mPropertySets[index].mTabReference;
+            mDockPanel.Children.Add(mCurrentTabControl);
+            mCurrentIndex = index;
+        }
+    }
+
+    class PropertySetListBox : ListBox
+    {
+        public delegate void UpdateIndex(int index);
+        public event UpdateIndex OnUpdateIndex;
+
+        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonUp(e);
+            OnUpdateIndex(SelectedIndex);
+        }
     }
 }
