@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -196,18 +196,14 @@ namespace Drag_DropDebugger.DataHandlers
                 $"cFileName: {desc.cFileName}"});
         }
 
-        public static void Handle(TabControl ParentTab, IDataObject dropData)
+        public TabControl mTabReference;
+        public FileGroupDescriptor(TabControl ParentTab, MemoryStream dropData, string dropType)
         {
-            if (dropData.GetDataPresent("FileGroupDescriptorW"))
-            {
-                //TabControl childTabCtrl = AddFileGroupTab(ParentTab);
-                TabControl childTabCtrl = TabHelper.AddSubTab(ParentTab, "FileGroupDescriptorW");
-                MemoryStream fileGroupStream = (MemoryStream)dropData.GetData("FileGroupDescriptorW");
-                TabHelper.AddRawDataTab(childTabCtrl, fileGroupStream);
-                //AddRawDataTab(childTabCtrl, fileGroupStream);
-                ProcessFileDescriptor(childTabCtrl, fileGroupStream);
-                fileGroupStream.Close();
-            }
+            mTabReference = TabHelper.AddSubTab(ParentTab, "FileGroupDescriptorW");
+            byte[] bytes = dropData.ToArray();
+
+            ProcessFileDescriptor(mTabReference, bytes);
+            TabHelper.AddRawDataTab(mTabReference, bytes);
         }
     }
 }
