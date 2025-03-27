@@ -1,5 +1,6 @@
 ﻿using Drag_DropDebugger.Helpers;
 using Drag_DropDebugger.Items;
+using Drag_DropDebugger.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,13 +22,19 @@ namespace Drag_DropDebugger.DataHandlers
         {
             public uint mSize;
             public byte[] mData;
-            public FolderContext(TabControl tabCtrl, ByteReader byteReader)
+            public FolderContext()
+            {
+                mSize = 0;
+                mData = new byte[0];
+            }
+
+            public TabItem CreateTab(TabControl tabCtrl, ByteReader byteReader)
             {
                 mSize = byteReader.read_ushort(false);
                 uint dataLength = (mSize + CIDA_NULL_TERMINATOR) * sizeof(ushort);
                 mData = byteReader.read_bytes(dataLength);
 
-                TabHelper.AddStringListTab(tabCtrl, "FolderContext", new string[] {
+                return TabHelper.AddStringListTab(tabCtrl, "FolderContext", new string[] {
                     $"Size: {mSize} (0x{mSize.ToString("X")})",
                     $"Data: {Convert.ToHexString(mData)}"});
             }
@@ -39,6 +46,7 @@ namespace Drag_DropDebugger.DataHandlers
             public uint cidl; //Size
             public uint[] aoffset; //Elements (cidl+1)
             public List<Object> mChildren;
+            public List<UIElement?> mTabs;
 
             public CIDA_Structure(TabControl ParentTab, ByteReader byteReader)
             {
@@ -48,6 +56,7 @@ namespace Drag_DropDebugger.DataHandlers
                 cidl = byteReader.read_uint();
                 aoffset = new uint[cidl + 1];
                 mChildren = new List<Object>();
+                mTabs = new List<UIElement?>();
 
                 for (int i = 0; i < aoffset.Length; i++)
                 {
@@ -61,13 +70,19 @@ namespace Drag_DropDebugger.DataHandlers
 
                     if (_Size < 2)
                     {
-                        mChildren.Add(new FolderContext(childTab, byteReader));
+                        FolderContext folderContext = new FolderContext();
+                        mTabs.Add(folderContext.CreateTab(childTab, byteReader));
+                        mChildren.Add(folderContext);
                     }
                     else
                     {
-                        Object? obj = ShellItemHandler.Handle(childTab, byteReader);
-                        if(obj != null)
+                        TabControl? tabControl;
+                        Object? obj = ShellItemHandler.Handle(childTab, byteReader, out tabControl);
+                        if (obj != null)
+                        {
                             mChildren.Add(obj);
+                            mTabs.Add(tabControl);
+                        }
                     }
 
                 }
@@ -77,19 +92,23 @@ namespace Drag_DropDebugger.DataHandlers
 
             void AddTab(TabControl ParentTab)
             {
-                List<string> dataStrings = new List<string>();
-                dataStrings.Add($"Size: {cidl}");
-                dataStrings.Add($"OffsetCount: {aoffset.Length}");
-                dataStrings.Add("");
+                StackedDataTab childTab = new StackedDataTab("Header");
+                childTab.AddDataGrid("Properties", new Dictionary<string, object>
+                {
+                    {"Size",  cidl},
+                    {"OffsetCount", aoffset},
+                });
+
                 for (int i = 0; i < mChildren.Count; i++)
                 {
-                    dataStrings.Add($"Offset {i + 1}:");
-                    dataStrings.Add($"    Position: {aoffset[i]}");
-                    dataStrings.Add($"    Type: {mChildren[i].GetType().Name}");
-                    dataStrings.Add("");
+                    childTab.AddDataGrid($"Offset #{i}", new Dictionary<string, object>
+                    {
+                        {"Position",  aoffset[i]},
+                        {"Type",  mChildren[i].GetType().Name},
+                        {mChildren[i].GetType().Name,  mTabs[i]}
+                    });
                 }
-
-                TabHelper.AddStringListTab(ParentTab, "Header", dataStrings.ToArray(), 0);
+                TabHelper.AddStackTab(ParentTab, "CIDA", childTab, 0);
             }
 
         }
