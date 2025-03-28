@@ -1,4 +1,4 @@
-﻿using Drag_DropDebugger.Helpers;
+using Drag_DropDebugger.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,6 +35,14 @@ namespace Drag_DropDebugger.DataHandlers
             return null;
         }
 
+        private static object? HandleByteFlag(MemoryStream dropData)
+        {
+            if (dropData is MemoryStream)
+                return dropData.ReadByte().ToString();
+
+            return null;
+        }
+
         public object? mTabReference;
 
         public HTMLHandler(TabControl ParentTab, MemoryStream dropData, string dropType)
@@ -56,6 +64,9 @@ namespace Drag_DropDebugger.DataHandlers
 
                 case "text/html":
                     return HandleHTML(ParentTab, dropData);
+
+                case "chromium/x-ignore-file-contents":
+                    return HandleByteFlag(dropData);
             }
 
             return null;

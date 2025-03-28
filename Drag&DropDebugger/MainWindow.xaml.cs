@@ -35,6 +35,7 @@ namespace Drag_DropDebugger
             {"text/x-moz-url", typeof(HTMLHandler)},
             {"UniformResourceLocator", typeof(HTMLHandler)},
             {"chromium/x-renderer-taint", typeof(HTMLHandler)},
+            {"chromium/x-ignore-file-contents", typeof(HTMLHandler)},
             {"text/html", typeof(HTMLHandler)},
 
             {"DisableDragText", typeof(BooleanHandler)},
