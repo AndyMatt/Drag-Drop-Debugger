@@ -1,4 +1,4 @@
-﻿using Drag_DropDebugger.Helpers;
+using Drag_DropDebugger.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Windows.Controls;
 
 namespace Drag_DropDebugger.Items
 {
-    public class DelegateFolderShellItem
+    public class DelegateFolderShellItem : TabbedClass
     {
         ushort mSize;
         byte mClassType;
@@ -41,22 +41,17 @@ namespace Drag_DropDebugger.Items
                 mExtensionBlock = new FileEntryExtensionBlock(parentTab, byteReader, mClassType);
             }
 
-            AddTab(parentTab);
-        }
-
-        void AddTab(TabControl parentTab)
-        {
-            List<string> data = new List<string>();
-            data.Add($"Size: {mSize} (0x{mSize.ToString("X")})");
-            data.Add($"Unknown: {mUnknown}");
-            data.Add($"InnerDataSize: {mInnerDataSize}");
-            data.Add($"Signiture: {mSigniture}");
-            data.Add($"DelegateClassId: {mDelegateClassId.ToString()}");
-            data.Add($"DelegateFolderId: {mDelegateFolderId.ToString()}");
-            data.Add("");
-            data.Add("");
-
-            TabHelper.AddStringListTab(parentTab, "Header", data.ToArray(), 0);
+            mTabReference = TabHelper.AddDataGridTab(parentTab, "Header", new Dictionary<string, object>()
+            {
+                {"Size", $"{mSize} (0x{mSize.ToString("X")})"},
+                {"Unknown", mUnknown},
+                {"InnerDataSize", mInnerDataSize },
+                {"Signiture", mSigniture },
+                {"FileEntryShellItem", mFileShellEntry.mTabReference },
+                {"DelegateClassId", mDelegateClassId },
+                {"DelegateFolderId", mDelegateFolderId },
+                {"ExtensionBlock", mExtensionBlock.mTabReference },
+            }, 0);
         }
 
         const uint ExtensionSignitureOffset = 4;

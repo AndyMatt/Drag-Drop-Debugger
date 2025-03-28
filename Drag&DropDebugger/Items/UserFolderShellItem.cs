@@ -9,7 +9,7 @@ using System.Windows.Controls;
 namespace Drag_DropDebugger.Items
 {
     //{59031A47-3F72-44A7-89C5-5595FE6B30EE}
-    public class UserFolderShellItem
+    public class UserFolderShellItem : TabbedClass
     {
         RootFolderExtensionBlock? mExtensionBlock;
 
@@ -19,24 +19,32 @@ namespace Drag_DropDebugger.Items
         {
             string SpecialPath = NativeMethods.GetPathFromGUID(guid);
 
-            TabHelper.AddStringListTab(parentTab, "GUID", new string[]{
-                $"GUID: {{{guid.ToString()}}}",
-                $"Path: {SpecialPath}"}, 0);
+            Dictionary<string, object> properties = new Dictionary<string, object>()
+            {
+                { "GUID", guid },
+                { "Path", SpecialPath }
+            };
+
 
             if (byteReader.scan_uint(ExtensionSignitureOffset) == 0xBEEF0026)
             {
                 mExtensionBlock = new RootFolderExtensionBlock(parentTab, byteReader);
+                properties.Add("ExtensionBlock", mExtensionBlock.mTabReference);
 
                 if (byteReader.scan_uint(KnownFolderIDOffset) == 0x23FEBBEE)
                 {
                     UserPropertyViewItem propertyView = new UserPropertyViewItem(parentTab, byteReader);
+                    properties.Add("UserPropertyViewItem", propertyView.mTabReference);
                 }
             }
 
             while(byteReader.scan_ushort() != 0x0)
             {
-                new FileEntryShellItem(parentTab, byteReader);
+                FileEntryShellItem fileEntry = new FileEntryShellItem(parentTab, byteReader);
+                properties.Add(fileEntry.GetPropertyString(), fileEntry.mTabReference);
             }
+
+            mTabReference = TabHelper.AddDataGridTab(parentTab, "GUID", properties, 0);
         }
     }
 }

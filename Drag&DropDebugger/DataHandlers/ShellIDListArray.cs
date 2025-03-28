@@ -15,7 +15,7 @@ using WpfHexaEditor.Core;
 
 namespace Drag_DropDebugger.DataHandlers
 {
-    public class ShellIDListArray
+    public class ShellIDListArray : TabbedClass
     {
         class FolderContext
         {
@@ -93,8 +93,6 @@ namespace Drag_DropDebugger.DataHandlers
             }
 
         }
-
-        public object mTabReference;
 
         public ShellIDListArray(TabControl ParentTab, MemoryStream dropData, string dropType)
         {

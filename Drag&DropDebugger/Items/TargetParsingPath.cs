@@ -1,4 +1,4 @@
-﻿using Drag_DropDebugger.Helpers;
+using Drag_DropDebugger.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Windows.Controls;
 
 namespace Drag_DropDebugger.Items
 {
-    public class TargetParsingPath //{B9B4B3FC-2B51-4A42-B5D8-324146AFCF25}
+    public class TargetParsingPath : TabbedClass //{B9B4B3FC-2B51-4A42-B5D8-324146AFCF25}
     {
         uint mSize;
         uint mID; // 0x2
@@ -28,15 +28,15 @@ namespace Drag_DropDebugger.Items
             mPropertySize = byteReader.read_uint();
             mProperty = byteReader.read_UnicodeString();
 
-            TabHelper.AddStringListTab(TabHelper.AddSubTab(parentTab, "TargetParsingPath"),
-                "Properties", new string[]
-                {
-                    $"Size: {mSize}",
-                    $"ID: {mID}",
-                    $"PropertyType: {mPropertyType}",
-                    $"PropertySize: {mPropertySize}",
-                    $"Path: {mProperty}",
-                }, 0);
+            mTabReference = TabHelper.AddDataGridTab(parentTab, "TargetParsingPath", new Dictionary<string, object>()
+            {
+                {"Size", $"{mSize} (0x{mSize.ToString("X")})" },
+                {"ID", mID },
+                {"PropertyType", mPropertyType },
+                {"PropertySize", mPropertySize },
+                {"Path", mProperty },
+
+            }, 0);
         }
 
     }

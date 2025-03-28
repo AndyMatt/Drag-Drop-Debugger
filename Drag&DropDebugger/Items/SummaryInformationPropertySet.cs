@@ -8,7 +8,7 @@ using System.Windows.Controls;
 
 namespace Drag_DropDebugger.Items
 {
-    public class SummaryInformationPropertySet //{F29F85E0-4FF9-1068-AB91-08002B27B3D9}
+    public class SummaryInformationPropertySet : TabbedClass //{F29F85E0-4FF9-1068-AB91-08002B27B3D9}
     {        
         enum PropertyTypes
         {
@@ -80,15 +80,14 @@ namespace Drag_DropDebugger.Items
 
             string _typeName = Enum.GetName(((PropertyTypes)mPropertyType).GetType(), (PropertyTypes)mPropertyType);
 
-            TabHelper.AddStringListTab(parentTab, "SummaryInformationPropertySet", new string[]
+            mTabReference = TabHelper.AddDataGridTab(parentTab, "SummaryInformationPropertySet", new Dictionary<string, object>()
             {
-                
-                $"Size: {mSize}",
-                $"Type: {_typeName}",
-                $"Buffer: {Convert.ToHexString(new byte[]{_buffer})}",
-                "",
-                $"{(mDataSize == 0xFFFF ? "" : $"DataSize: {mDataSize}")}",
-                $"Data: {mData.ToString()}" });
+                {"Size", $"{mSize} (0x{mSize.ToString("X")})"},
+                {"Type", _typeName},
+                {"Buffer", Convert.ToHexString(new byte[]{_buffer})},
+                {"DataSize",mDataSize == 0xFFFF ? "NA" : mDataSize},
+                {"Data", mData},                      
+            }, 0);
         }
     }
 }

@@ -65,10 +65,10 @@ namespace Drag_DropDebugger.Items
         }
     }
 
-    class VT_GUID
+    class VT_CLSID
     {
         Guid mValue;
-        public VT_GUID(TabControl parentTab, ByteReader byteReader)
+        public VT_CLSID(TabControl parentTab, ByteReader byteReader)
         {
             mValue = byteReader.read_guid();
         }
@@ -116,7 +116,7 @@ namespace Drag_DropDebugger.Items
                     mValue = byteReader.read_uint();
                     break;
 
-                case "VT_GUID":
+                case "VT_CLSID":
                     mValue = byteReader.read_guid();
                     break;
 
@@ -157,7 +157,7 @@ namespace Drag_DropDebugger.Items
 
     }
 
-    public class AppUserModel_Generic
+    public class AppUserModel_Generic : TabbedClass
     {
         static Dictionary<uint, Type> PropertyIDLookup = new Dictionary<uint, Type>
         {
@@ -169,6 +169,7 @@ namespace Drag_DropDebugger.Items
         byte reserved; //0x0
         uint mPropertyType; //0x1F (VT_LPWSTR)
         Object? mProperty;
+        string mPropertyName;
 
         public AppUserModel_Generic(TabControl parentTab, ByteReader byteReader)
         {
@@ -178,9 +179,9 @@ namespace Drag_DropDebugger.Items
             reserved = propertyReader.read_byte();
             mPropertyType = propertyReader.read_uint();
 
-            string _PropertyName = PropertyNames.GetPropertySetName(mPropertyIdentifier);
+            mPropertyName = PropertyNames.GetPropertySetName(mPropertyIdentifier);
 
-            TabControl childTab = TabHelper.AddSubTab(parentTab, _PropertyName);
+            TabControl childTab = TabHelper.AddSubTab(parentTab, mPropertyName);
             
             if(PropertyIDLookup.ContainsKey(mPropertyIdentifier))
             {
@@ -190,30 +191,42 @@ namespace Drag_DropDebugger.Items
             else
             {
                 mProperty = new VT_DYNAMIC(childTab, propertyReader, mPropertyType);
-                //mProperty = new VT_GENERIC(childTab, propertyReader, mSize - 15);      
             }
 
-            TabHelper.AddStringListTab(childTab, "Properties", new string[]
+            TabHelper.AddDataGridTab(childTab, "Header", new Dictionary<string, object>()
             {
-                $"Size: {mSize}",
-                $"PropertyIdentifier: {mPropertyIdentifier}",
-                $"PropertyType: {VariantTypes.GetTypeString(mPropertyType)}",
-                $"Value: {mProperty.ToString()}",
-            },0);
+                {"Size", $"{mSize} (0x{mSize.ToString("X")})"},
+                {"Property Identifier", mPropertyIdentifier},
+                {"Property Type", VariantTypes.GetTypeString(mPropertyType)},
+                {"Value", mProperty.ToString()}
+            }, 0);
+
+            mTabReference = childTab;
+        }
+
+        public string GetAppUserModelClassName()
+        {
+            return mPropertyName;
         }
     }
 
-    public class ApplicationShellPropertySets
+    public class ApplicationShellPropertySets : TabbedClass
     {
         List<Object>? mPropertySets;
         public ApplicationShellPropertySets(TabControl parentTab, ByteReader byteReader)
         {
+            TabControl childTab = TabHelper.AddSubTab(parentTab, "ApplicationShellPropertySets");
             mPropertySets = new List<Object>();
+            Dictionary<string, object> properties = new Dictionary<string, object>();
 
             while (byteReader.scan_uint() != 0)
             {
-                mPropertySets.Add(new AppUserModel_Generic(parentTab, byteReader));
+                AppUserModel_Generic appUserModel = new AppUserModel_Generic(childTab, byteReader);
+                mPropertySets.Add(appUserModel);
+                properties.Add(appUserModel.GetAppUserModelClassName(), appUserModel.mTabReference);
             }
+
+            mTabReference = childTab;
         }
     }
 }

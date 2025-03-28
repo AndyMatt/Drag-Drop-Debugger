@@ -1,4 +1,4 @@
-﻿using Drag_DropDebugger.Helpers;
+using Drag_DropDebugger.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Windows.Controls;
 
 namespace Drag_DropDebugger.Items
 {
-    public class TileProperties //{86D40B4D-9069-443C-819A-2A54090DCCEC}
+    public class TileProperties : TabbedClass //{86D40B4D-9069-443C-819A-2A54090DCCEC}
     {
         enum PropertyTypes
         {
@@ -35,7 +35,7 @@ namespace Drag_DropDebugger.Items
         const ushort VT_UI4 = 0x013;
         const ushort VT_LPWSTR = 0x001F;
 
-        class TileProperty
+        class TileProperty : TabbedClass
         {
             uint mSize;
             uint mPropertyType;
@@ -53,32 +53,32 @@ namespace Drag_DropDebugger.Items
                 _buffer = propertyBytes.read_byte();
                 mVariableType = propertyBytes.read_uint();
 
-                string DataString = "";
+                object _Data = "";
                 switch (mVariableType)
                 {
                     case VT_UI4:
                         mData = propertyBytes.read_uint();
-                        DataString = $"Data: {mData.ToString()} (0x{((uint)mData).ToString("X").PadLeft(8,'0')})";
+                        _Data = $"{mData.ToString()} (0x{((uint)mData).ToString("X").PadLeft(8,'0')})";
                         break;
 
                     case VT_LPWSTR:
                         mDataSize = propertyBytes.read_uint();
                         mData = propertyBytes.read_UnicodeString();
-                        DataString = $"Data: {mData.ToString()}";
+                        _Data = mData;
                         break;
                 }
 
                 string _typeName = Enum.GetName(((PropertyTypes)mPropertyType).GetType(), (PropertyTypes)mPropertyType);
 
-                TabHelper.AddStringListTab(parentTab, _typeName, new string[]
-                {
 
-                $"Size: {mSize}",
-                $"Type: {_typeName}",
-                $"Buffer: {Convert.ToHexString(new byte[]{_buffer})}",
-                "",
-                $"{(mDataSize == 0xFFFF ? "" : $"DataSize: {mDataSize}")}",
-                DataString });
+                mTabReference = TabHelper.AddDataGridTab(parentTab, _typeName, new Dictionary<string, object>()
+                {
+                    {"Size", $"{mSize} (0x{mSize.ToString("X")})" },
+                    {"Type", _typeName },
+                    {"Buffer", Convert.ToHexString(new byte[]{_buffer}) },
+                    {"mDataSize", mDataSize == 0xFFFF ? "NA" : mDataSize },
+                    {"Data", _Data },
+                }, 0);
             }
         }
 
@@ -93,6 +93,8 @@ namespace Drag_DropDebugger.Items
             {
                 mProperties.Add(new TileProperty(childTab, byteReader));
             }
+
+            mTabReference = childTab;
         }
        
     }

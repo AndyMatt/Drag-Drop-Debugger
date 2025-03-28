@@ -166,7 +166,7 @@ namespace Drag_DropDebugger.Helpers
             return newTab;
         }
 
-        public static void AddBitmapTab(TabControl tabCtrl, string Label, BitmapSource bitmap, int indexPos = -1)
+        public static TabItem AddBitmapTab(TabControl tabCtrl, string Label, BitmapSource bitmap, int indexPos = -1)
         {
             Image bitmapImage = new Image()
             {
@@ -209,9 +209,10 @@ namespace Drag_DropDebugger.Helpers
             {
                 tabCtrl.Items.Insert(indexPos, newTab);
             }
+            return newTab;
         }
 
-        public static void AddDataGridTab(TabControl tabCtrl, string Label, Dictionary<String, Object> data, int indexPos = -1)
+        public static TabItem AddDataGridTab(TabControl tabCtrl, string Label, Dictionary<String, Object> data, int indexPos = -1)
         {
             DictionaryGridView dataGrid = new DictionaryGridView(data);
 
@@ -237,6 +238,7 @@ namespace Drag_DropDebugger.Helpers
                 tabCtrl.Items.Insert(indexPos, newTab);
             }
 
+            return newTab;
         }
 
         public static TabItem AddHTMLTab(TabControl tabCtrl, string Label, String html, int indexPos = -1)

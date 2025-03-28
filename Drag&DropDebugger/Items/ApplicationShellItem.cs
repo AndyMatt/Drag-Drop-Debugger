@@ -1,10 +1,10 @@
-﻿using static Drag_DropDebugger.DataHandlers.ShellIDListArray;
+using static Drag_DropDebugger.DataHandlers.ShellIDListArray;
 using System.Windows.Controls;
 using Drag_DropDebugger.Helpers;
 
 namespace Drag_DropDebugger.Items
 {
-    public class ApplicationShellItem
+    public class ApplicationShellItem : TabbedClass
     {
         ushort mSize;
         ushort Unknown_1;
@@ -34,35 +34,36 @@ namespace Drag_DropDebugger.Items
 
             mProperties = new List<WindowsPropertySet>();
 
-            TabControl setsTab = TabHelper.AddSubTab(childTab, "PropertySets");
+            Dictionary<string, object> properties = new Dictionary<string, object>()
+            {
+                {"Size", $"{mSize} (0x{mSize.ToString("X")})"},
+                {"InnerSize", mInnerSize},
+                {"Unknown_1", Unknown_1},
+                {"mSigniture", mSigniture},
+                {"Size of Property Sets", mInnerInnerSize},
+                {"Unknown_2", unknown_2},
+                {"Unknown_3", unknown_3},
+                {"Unknown_4", unknown_4},
+            };
 
             while (byteReader.read_uint(false) != 0)
             {
-                mProperties.Add(new WindowsPropertySet(setsTab, byteReader, mProperties.Count));
+                WindowsPropertySet set = new WindowsPropertySet(childTab, byteReader, mProperties.Count);
+                properties.Add($"Property Set #{mProperties.Count+1}", set.mTabReference);
+                mProperties.Add(set);
             }
-
-            AddTab(childTab);
 
             byteReader.SetOffset(mPropertyStoreOffset);
             if (hasExtensionBlock(byteReader))
             {
                 mExtensionBlock = new ApplicationShellExtensionBlock(parentTab, byteReader);
+                properties.Add($"ApplicationShellExtentionBlock", mExtensionBlock.mTabReference);
             }
-        }
 
-        public void AddTab(TabControl parentTab)
-        {
-            TabHelper.AddStringListTab(parentTab, "Header", new string[]{
-                $"Size: {mSize} (0x{mSize.ToString("X")}) (0x{mSize.ToString("X")})",
-                $"InnerSize: {mInnerSize}",
-                $"Unknown: {Unknown_1}",
-                $"mSigniture: {mSigniture}",
-                $"mInnerInnerSize: {mInnerInnerSize}",
-                $"Unknown: {unknown_2}",
-                $"Unknown: {unknown_3}",
-                $"Unknown: {unknown_4}",
-                $"Number of PropertySet: {mProperties.Count}"}, 0);
-        }
+            TabHelper.AddDataGridTab(childTab, "Properties", properties, 0);
+
+            mTabReference = childTab;
+        }   
 
         const uint ExtensionSignitureOffset = 4;
         bool hasExtensionBlock(ByteReader byteReader)

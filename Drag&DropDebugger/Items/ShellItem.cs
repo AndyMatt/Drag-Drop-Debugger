@@ -63,19 +63,32 @@ namespace Drag_DropDebugger.Items
                     Type ClassType = ClassIDs[classID];
 
                     TabControl childTab = TabHelper.AddSubTab(parentTab, ClassType.Name);
-                    TabHelper.AddStringListTab(childTab, "Header", new string[] {
-                        $"Size: {size}",
-                        $"Indicator: {indicator}",
-                        $"SortIndex: {sortIndex}",
-                        $"Guid: {classID.ToString()}" }, 0);
+
+                    dynamic? shellItem;
 
                     if (ClassType == typeof(UserFolderShellItem))
                     {
 
-                        return new UserFolderShellItem(childTab, classID, byteReader);
+                        shellItem = new UserFolderShellItem(childTab, classID, byteReader);
+                    }
+                    else
+                    {
+                        shellItem = Activator.CreateInstance(ClassType, childTab, byteReader);
                     }
 
-                    return Activator.CreateInstance(ClassType, childTab, byteReader);
+
+                    TabHelper.AddDataGridTab(childTab, "Header", new Dictionary<string, object>()
+                    {
+                        {"Size", $"{size} (0x{size.ToString("X")})"},
+                        {"Indicator", indicator},
+                        {"SortIndex", sortIndex},
+                        {"GUID", classID.ToString()},
+                        {$"{shellItem.GetType().Name}", shellItem.mTabReference},
+                    }, 0);
+
+
+                    return shellItem;
+
                 }
                 else
                 {

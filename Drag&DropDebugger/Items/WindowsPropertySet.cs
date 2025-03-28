@@ -8,13 +8,13 @@ using System.Windows.Controls;
 
 namespace Drag_DropDebugger.Items
 {
-    public class WindowsPropertySet
+    public class WindowsPropertySet : TabbedClass
     {
         uint mSize;
         string mVersion;
         public Guid mClassID;
         //SimplePropertyRecord mRecord;
-        object? mPropertySet;
+        dynamic mPropertySet;
 
         const uint mVersionSize = 4;
 
@@ -54,10 +54,15 @@ namespace Drag_DropDebugger.Items
 
             string HeaderName = "Set" + (index == -1 ? "" : $"#{index + 1}") + $" ";
 
-            TabHelper.AddStringListTab(childTab, "Header", new string[]{
-                    $"mSize: {mSize} (0x{mSize.ToString("X")})",
-                    $"mVersion: {mVersion}",
-                    $"mClassID: {mClassID.ToString()}"}, 0);
+            TabHelper.AddDataGridTab(childTab, "Header", new Dictionary<string, object>()
+                {
+                    {"Size", $"{mSize} (0x{mSize.ToString("X")})" },
+                    {"mVersion", mVersion },
+                    {"mClassID", mClassID },
+                    { mPropertySet.GetType() == typeof(byte[]) ? "UnknownPropertySet" : mPropertySet.GetType().Name,  mPropertySet.GetType() == typeof(byte[]) ? mPropertySet : mPropertySet.mTabReference }
+                }, 0);
+
+            mTabReference = childTab;
         }
     }
 }

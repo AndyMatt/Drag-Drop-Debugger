@@ -1,4 +1,4 @@
-﻿using Drag_DropDebugger.Helpers;
+using Drag_DropDebugger.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO.Packaging;
@@ -21,7 +21,7 @@ namespace Drag_DropDebugger.Items
         }
     }
 
-    public class FileEntryExtensionBlock //0xBEEF0004
+    public class FileEntryExtensionBlock : TabbedClass //0xBEEF0004
     {
         ushort mSize;
         ushort mVersion; // 3=>Windows XP or 2003   7=> Windows Vista (SP0) 8=> Windows 2008, 7, 8.0    9=> Windows 8.1, 10, 11
@@ -83,7 +83,21 @@ namespace Drag_DropDebugger.Items
                 mExtensionBlockOffset = byteReader.read_ushort();
             }
 
-            AddTab(childTab);
+            mTabReference = TabHelper.AddDataGridTab(childTab, "Header", new Dictionary<string, object>()
+            {
+                {"Size", $"{mSize} (0x{mSize.ToString("X")})"},
+                {"Version", mVersion},
+                {"ExtensionSigniture", $"0x{mExtensionSigniture.ToString("X2")}" },
+                {"CreationModificationTime", mCreationModificationTime },
+                {"LastAccessTime", mLastAccessTime },
+                {"Unknown|Version", mUnknownVersion },
+                {"mNtfsReference", mNtfsReference == null ? "N/A" : $"EntryIndex({mNtfsReference.mEntryIndex}) SequenceNumber({mNtfsReference.mSequenceNumber})" },
+                {"LongStringSize", mLongStringSize },
+                {"LongName", mLongName },
+                { "mExtensionBlockOffset", $"0x{mExtensionBlockOffset.ToString("X2")}" },
+            }, 0);
+
+            mTabReference = childTab;
         }
 
         string GetClassTypeString(byte _classTypeID)
@@ -94,26 +108,9 @@ namespace Drag_DropDebugger.Items
             return "FileExtryExtensionBlock";
         }
 
-        void AddTab(TabControl parentTab)
+        public string GetFileName()
         {
-            List<string> list = new List<string>();
-            list.Add($"Size: {mSize} (0x{mSize.ToString("X")})");
-            list.Add($"Version: {mVersion}");
-            list.Add($"ExtensionSigniture: 0x{mExtensionSigniture.ToString("X2")}");
-            list.Add($"CreationModificationTime: {mCreationModificationTime}");
-            list.Add($"LastAccessTime: {mLastAccessTime}");
-            list.Add($"Unknown|Version: {mUnknownVersion}");
-            if (mNtfsReference != null)
-            {
-                list.Add($"mNtfsReference:");
-                list.Add($"    EntryIndex: {mNtfsReference.mEntryIndex}");
-                list.Add($"    SequenceNumber: {mNtfsReference.mSequenceNumber}");
-            }
-            list.Add($"LongStringSize: {mLongStringSize}");
-            list.Add($"LongName: {mLongName}");
-            list.Add($"LocalizedName: {mLocalizedName}");
-            list.Add($"mExtensionBlockOffset: 0x{mExtensionBlockOffset.ToString("X2")}");
-            TabHelper.AddStringListTab(parentTab, "Header", list.ToArray(), 0);
+            return mLongName;
         }
     }
 }
