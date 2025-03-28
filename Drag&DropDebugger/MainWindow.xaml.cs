@@ -22,6 +22,7 @@ namespace Drag_DropDebugger
             {"FileGroupDescriptorW", typeof(FileGroupDescriptor)},
             {"Shell IDList Array", typeof(ShellIDListArray)},
             {"DragImageBits", typeof(DragImageBits)},
+            {"FileOpFlags", typeof(FileOpFlagsHander)},
             {"UniformResourceLocatorW", typeof(HTMLHandler)},
             {"text/x-moz-url", typeof(HTMLHandler)},
             {"UniformResourceLocator", typeof(HTMLHandler)},
