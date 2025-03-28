@@ -173,6 +173,26 @@ namespace Drag_DropDebugger.Helpers
             return result;
         }
 
+        public string read_alignedAsciiString()
+        {
+            uint strLength = read_uint();
+            uint alignmentOffset = strLength % sizeof(uint) == 0 ? 0 : sizeof(uint) - (strLength % sizeof(uint));
+
+            string result = Encoding.ASCII.GetString(bytes, (int)_iterator, (int)strLength);
+            _iterator += strLength + alignmentOffset;
+            return result;
+        }
+
+        public string read_alignedUnicodeString()
+        {
+            uint strLength = read_uint() * 2;
+            uint alignmentOffset = strLength % sizeof(uint) == 0 ? 0 : sizeof(uint) - (strLength % sizeof(uint));
+
+            string result = Encoding.Unicode.GetString(bytes, (int)_iterator, (int)strLength);
+            _iterator += strLength + alignmentOffset;
+            return result;
+        }
+
         public string read_UnicodeString(bool advance = true)
         {
             uint pos = _iterator;

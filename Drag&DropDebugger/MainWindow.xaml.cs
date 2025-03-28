@@ -36,6 +36,7 @@ namespace Drag_DropDebugger
             {"UniformResourceLocator", typeof(HTMLHandler)},
             {"chromium/x-renderer-taint", typeof(HTMLHandler)},
             {"chromium/x-ignore-file-contents", typeof(HTMLHandler)},
+            {"chromium/x-bookmark-entries", typeof(HTMLHandler)},
             {"text/html", typeof(HTMLHandler)},
 
             {"DisableDragText", typeof(BooleanHandler)},
