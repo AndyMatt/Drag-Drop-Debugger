@@ -6,6 +6,7 @@ namespace Drag_DropDebugger.UI
     public class StackedDataTab : TabItem
     {
         List<UIElement> mChildren;
+        ScrollViewer mScrollViewer;
         StackPanel mPanel;
         public StackedDataTab(string label)
         {
@@ -13,8 +14,18 @@ namespace Drag_DropDebugger.UI
             Header = label;
             Height = 20;
             VerticalAlignment = VerticalAlignment.Top;
-            mPanel = new StackPanel();
-            AddChild(mPanel);
+            mPanel = new StackPanel()
+            {
+                CanVerticallyScroll = true,
+            };
+
+            mScrollViewer = new ScrollViewer()
+            {
+                Content = mPanel,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+            };
+            
+            AddChild(mScrollViewer);
         }
 
         public void AddDataGrid(string label, Dictionary<String, Object> data, int indexPos = -1)
