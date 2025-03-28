@@ -44,6 +44,7 @@ namespace Drag_DropDebugger.UI
 
                     switch (mObject.GetType().Name)
                     {
+                        case "StackedDataTab":
                         case "PropertySetTab":
                         case "TabItem":
                             Text = "...";
