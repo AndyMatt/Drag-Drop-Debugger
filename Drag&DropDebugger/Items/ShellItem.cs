@@ -47,7 +47,7 @@ namespace Drag_DropDebugger.Items
             {new Guid("a0953c92-50dc-43bf-be83-3742fed03c9c"), typeof(UserFolderShellItem)},
         };
 
-        public static object? Handle(TabControl parentTab, ByteReader byteReader)
+        public static object? Handle(TabControl parentTab, ByteReader byteReader, out TabControl? tabCtrl)
         {            
             byte indicator = byteReader.scan_byte(sizeof(ushort));
 
@@ -86,6 +86,7 @@ namespace Drag_DropDebugger.Items
                         {$"{shellItem.GetType().Name}", shellItem.mTabReference},
                     }, 0);
 
+                    tabCtrl = childTab;
 
                     return shellItem;
 
@@ -98,19 +99,23 @@ namespace Drag_DropDebugger.Items
             else if (indicator == 0x2F)
             {
                 TabControl childTab = TabHelper.AddSubTab(parentTab, "RootFolderShellItem");
+                tabCtrl = childTab;
                 return new RootFolderShellItem(childTab, byteReader);
             }
             else if (indicator == 0x32)
             {
                 TabControl childTab = TabHelper.AddSubTab(parentTab, "FileEntryShellItem");
+                tabCtrl = childTab;
                 return new FileEntryShellItem(childTab, byteReader);
             }
             else if (indicator == 0x74)
             {
                 TabControl childTab = TabHelper.AddSubTab(parentTab, "DelegateFolderShellItem");
+                tabCtrl = childTab;
                 return new DelegateFolderShellItem(childTab, byteReader);
             }
 
+            tabCtrl = null;
             return null;
 
         }
