@@ -17,6 +17,7 @@ namespace Drag_DropDebugger.Items
         dynamic mPropertySet;
 
         const uint mVersionSize = 4;
+        public string PropertySetName = "";
 
         static Dictionary<Guid, Type> ClassIDs = new Dictionary<Guid, Type>()
         {
@@ -30,17 +31,17 @@ namespace Drag_DropDebugger.Items
             {new Guid("0DED77B3-C614-456C-AE5B-285B38D7B01B"), typeof(LauncherProperties)},
         };
 
-        public WindowsPropertySet(TabControl tabCtrl, ByteReader byteReader, int index = -1)
+        public WindowsPropertySet(ByteReader byteReader, int index = -1)
         {
-            TabControl childTab = TabHelper.AddSubTab(tabCtrl, index == -1 ? "PropertySet" : $"PropertySet#{index + 1}");
             byte[] rawData = byteReader.read_bytes(byteReader.read_uint(false));
-            TabHelper.AddRawDataTab(childTab, rawData);
-
             ByteReader propertyReader = new ByteReader(rawData);
 
             mSize = propertyReader.read_uint();
             mVersion = propertyReader.read_AsciiString(mVersionSize);
             mClassID = propertyReader.read_guid();
+
+            TabControl childTab = TabHelper.CreateTab();
+            TabHelper.AddRawDataTab(childTab, rawData);
 
             if (ClassIDs.ContainsKey(mClassID))
             {
@@ -52,7 +53,9 @@ namespace Drag_DropDebugger.Items
                 mPropertySet = propertyReader.read_remainingbytes();
             }
 
-            string HeaderName = "Set" + (index == -1 ? "" : $"#{index + 1}") + $" ";
+            PropertySetName = mPropertySet.GetType().Name;
+
+            //TabHelper.SetTabLabel(childTab, $"{index + 1} - {PropertySetName}");
 
             TabHelper.AddDataGridTab(childTab, "Header", new Dictionary<string, object>()
                 {

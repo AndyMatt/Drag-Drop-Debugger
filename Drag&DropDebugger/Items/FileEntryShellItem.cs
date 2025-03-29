@@ -50,8 +50,8 @@ namespace Drag_DropDebugger.Items
                 {"Last Modification Date", mLastModificationTime },
                 {"FileAttributes",mFileAttributes },
                 {"PrimaryName", mPrimaryName },
-                {"ExtensionBlock", mExtensionBlock.mTabReference },
-            },0);
+                {"ExtensionBlock", (mExtensionBlock != null ? mExtensionBlock.mTabReference : "NULL") },
+            }, 0);
 
             mTabReference = childTab;
         }

@@ -1,4 +1,5 @@
 ﻿using Drag_DropDebugger.Helpers;
+using Drag_DropDebugger.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,10 @@ namespace Drag_DropDebugger.Items
             mVersion = byteReader.read_ushort();
             mExtensionSigniture = byteReader.read_uint();
 
-            mPropertySet = new WindowsPropertySet(TabHelper.AddSubTab(childTab, "PropertySets"), byteReader, 0);
+            PropertySetTab propertySetTab = new PropertySetTab();
+            mPropertySet = new WindowsPropertySet(byteReader, 0);
+            propertySetTab.AddPropertySet(mPropertySet);
+            childTab.Items.Add(propertySetTab);
 
             mTerminator = byteReader.read_uint();
 
@@ -33,7 +37,7 @@ namespace Drag_DropDebugger.Items
                 {"Version", mVersion},
                 {"ExtensionSigniture", $"0x{mExtensionSigniture.ToString("X2")}"},
                 {"Terminator", mTerminator},
-                {"PropertySets", mPropertySet.mTabReference }
+                {"PropertySet", propertySetTab }
             }, 0);
 
             mTabReference = childTab;

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows;
@@ -11,10 +7,6 @@ using WpfHexaEditor.Core;
 using WpfHexaEditor;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using static Drag_DropDebugger.MainWindow;
-using System.Windows.Data;
-using System.Reflection;
-using System.Reflection.PortableExecutable;
 using Drag_DropDebugger.UI;
 using TheArtOfDev.HtmlRenderer.WPF;
 
@@ -44,6 +36,32 @@ namespace Drag_DropDebugger.Helpers
             parentTab.Items.Add(newTab);
 
             return childTabCtrl;
+        }
+
+        public static TabControl CreateTab()
+        {
+            return new TabControl()
+            {
+                Margin = new Thickness(5.0, 5.0, 5.0, 0.0),
+            };
+        }
+
+        public static void SetTabLabel(TabControl tabCtrl, string label)
+        {
+            if(tabCtrl.Parent != null && tabCtrl.Parent.GetType() == typeof(Grid))
+            {
+                Grid tabGrid = (Grid)tabCtrl.Parent;
+                if (tabGrid.Parent != null && tabGrid.Parent.GetType() == typeof(TabItem))
+                {
+                    TabItem tabItem = (TabItem)tabGrid.Parent;
+                    tabItem.Header = label;
+                }
+            }
+            else if (tabCtrl.Parent != null && tabCtrl.Parent.GetType() == typeof(TabItem))
+            {
+                TabItem tabItem = (TabItem)tabCtrl.Parent;
+                tabItem.Header = label;
+            }
         }
 
         public static TabItem AddRawDataTab(TabControl tabCtrl, MemoryStream stream, string header = "Raw")
@@ -272,6 +290,20 @@ namespace Drag_DropDebugger.Helpers
 
             return newTab;
 
+        }
+
+        public static TabItem AddStackTab(TabControl tabCtrl, string Label, StackedDataTab stackData, int indexPos = -1)
+        {
+            if (indexPos == -1 || tabCtrl.Items.Count == 0)
+            {
+                tabCtrl.Items.Add(stackData);
+            }
+            else
+            {
+                tabCtrl.Items.Insert(indexPos, stackData);
+            }
+
+            return stackData;
         }
 
         private static void ListBox_KeyDown(object sender, KeyEventArgs e)
