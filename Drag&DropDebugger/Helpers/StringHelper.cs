@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using static Drag_DropDebugger.DataHandlers.FileGroupDescriptor;
 using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.Serialization.Formatters;
+using System.Windows.Controls;
 
 namespace Drag_DropDebugger.Helpers
 {
@@ -112,6 +113,11 @@ namespace Drag_DropDebugger.Helpers
                 return $"{value.ToString()} (0x{((uint)value).ToString("X")})";
             }
             return value;
+        }
+
+        public static string uint2HexString(uint value)
+        {
+            return $"0x{value.ToString("X").PadLeft(8, '0')}";
         }
     }
 }
