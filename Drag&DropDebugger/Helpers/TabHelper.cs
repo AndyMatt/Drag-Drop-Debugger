@@ -114,6 +114,26 @@ namespace Drag_DropDebugger.Helpers
             return newTab;
         }
 
+        public static TabItem AddHTMLTextTab(TabControl tabCtrl, MemoryStream stream)
+        {
+            HtmlTextBox htmlTextBox = new HtmlTextBox()
+            {
+                Margin = new Thickness(5.0, 5.0, 5.0, 0.0)
+            };
+
+            htmlTextBox.Text = Encoding.ASCII.GetString(stream.ToArray());
+
+            TabItem newTab = new TabItem()
+            {
+                Header = "HTML Source",
+                Content = htmlTextBox
+            };
+
+            tabCtrl.Items.Add(newTab);
+
+            return newTab;
+        }
+
         public static TabItem AddStringTab(TabControl tabCtrl, string Label, string data)
         {
             ListBox listBox = new ListBox()
