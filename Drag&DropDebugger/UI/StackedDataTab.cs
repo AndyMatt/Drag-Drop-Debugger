@@ -30,13 +30,13 @@ namespace Drag_DropDebugger.UI
             AddChild(mScrollViewer);
         }
 
-        private void AddUIElement(string label, object element, int indexPos = -1)
+        private void AddUIElement(string label, object element, int indentcount = 0, int indexPos = -1)
         {
             GroupBox groupBox = new GroupBox()
             {
                 Header = label,
                 Content = element,
-                Margin = new Thickness(0, 0, 0, 10),
+                Margin = new Thickness((indentcount*20), 0, 0, 10),
             };
 
             if (!(indexPos >= 0 && indexPos < mChildren.Count))
@@ -53,9 +53,9 @@ namespace Drag_DropDebugger.UI
             }
         }
 
-        public void AddDataGrid(string label, Dictionary<String, Object> data, int indexPos = -1)
+        public void AddDataGrid(string label, Dictionary<String, Object> data, int indentCount = 0, int indexPos = -1)
         {
-            AddUIElement(label, new DictionaryGridView(data), indexPos);
+            AddUIElement(label, new DictionaryGridView(data), indentCount, indexPos);
         }
 
         public void AddPreviewPanel(string label, BitmapSource bitmap, int indexPos = -1)
