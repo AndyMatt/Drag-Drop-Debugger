@@ -111,7 +111,7 @@ namespace Drag_DropDebugger.DataHandlers
                 if (element.hasMetaData)
                     properties.Add(element.MetaDataName, element.MetaDataValue);
 
-                stackTab.AddDataGrid(element.Title != "" ? element.Title : element.URL, properties);               
+                stackTab.AddDataGrid(element.Title != "" ? element.Title : element.URL, properties, (path.Split('/').Length - 1));               
             }
         }
 
@@ -152,7 +152,7 @@ namespace Drag_DropDebugger.DataHandlers
 
             properties.Add("Element Count", elementCount);
 
-            stackTab.AddDataGrid("Folder", properties);
+            stackTab.AddDataGrid("Folder", properties, (path.Split('/').Length - 1));
 
             if (elementCount > 0)
             {
