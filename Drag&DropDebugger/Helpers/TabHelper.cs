@@ -292,7 +292,7 @@ namespace Drag_DropDebugger.Helpers
 
         }
 
-        public static TabItem AddStackTab(TabControl tabCtrl, string Label, StackedDataTab stackData, int indexPos = -1)
+        public static TabItem AddStackTab(TabControl tabCtrl, StackedDataTab stackData, int indexPos = -1)
         {
             if (indexPos == -1 || tabCtrl.Items.Count == 0)
             {

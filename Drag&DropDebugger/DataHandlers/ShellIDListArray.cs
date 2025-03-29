@@ -108,7 +108,7 @@ namespace Drag_DropDebugger.DataHandlers
                         {mChildren[i].GetType().Name,  mTabs[i]}
                     });
                 }
-                TabHelper.AddStackTab(ParentTab, "CIDA", childTab, 0);
+                TabHelper.AddStackTab(ParentTab, childTab, 0);
             }
 
         }
