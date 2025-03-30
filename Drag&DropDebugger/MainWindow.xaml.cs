@@ -25,6 +25,7 @@ namespace Drag_DropDebugger
             {"FileOpFlags", typeof(FileOpFlagsHander)},
             {"Paste Succeeded", typeof(DropEffectHandler)},
             {"Preferred DropEffect", typeof(DropEffectHandler)},
+            {"DragContext", typeof(DragContextHandler)},
             {"UniformResourceLocatorW", typeof(HTMLHandler)},
             {"text/x-moz-url", typeof(HTMLHandler)},
             {"UniformResourceLocator", typeof(HTMLHandler)},
