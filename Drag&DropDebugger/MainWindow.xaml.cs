@@ -23,6 +23,8 @@ namespace Drag_DropDebugger
             {"Shell IDList Array", typeof(ShellIDListArray)},
             {"DragImageBits", typeof(DragImageBits)},
             {"FileOpFlags", typeof(FileOpFlagsHander)},
+            {"Paste Succeeded", typeof(DropEffectHandler)},
+            {"Preferred DropEffect", typeof(DropEffectHandler)},
             {"UniformResourceLocatorW", typeof(HTMLHandler)},
             {"text/x-moz-url", typeof(HTMLHandler)},
             {"UniformResourceLocator", typeof(HTMLHandler)},
