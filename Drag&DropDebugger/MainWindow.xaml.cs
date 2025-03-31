@@ -36,6 +36,13 @@ namespace Drag_DropDebugger
             {"UniformResourceLocator", typeof(HTMLHandler)},
             {"chromium/x-renderer-taint", typeof(HTMLHandler)},
             {"text/html", typeof(HTMLHandler)},
+
+            {"DisableDragText", typeof(BooleanHandler)},
+            {"IsComputingImage", typeof(BooleanHandler)},
+            {"InShellDragLoop", typeof(BooleanHandler)},
+            {"IsShowingLayered", typeof(BooleanHandler)},
+            {"IsShowingText", typeof(BooleanHandler)},
+            {"UsingDefaultDragImage", typeof(BooleanHandler)},
         };
         private void Window_Drop(object sender, DragEventArgs e)
         {
