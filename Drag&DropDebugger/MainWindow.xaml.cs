@@ -29,6 +29,8 @@ namespace Drag_DropDebugger
             {"DragSourceHelperFlags", typeof(DragSourceHelperFlagsHandler)},
             {"DragWindow", typeof(DragWindowHandler)},
             {"DropDescription", typeof(DropDescriptionHandler)},
+            {"ComputedDragImage", typeof(ComputedDragImageHandler)},
+            
             {"UniformResourceLocatorW", typeof(HTMLHandler)},
             {"text/x-moz-url", typeof(HTMLHandler)},
             {"UniformResourceLocator", typeof(HTMLHandler)},
