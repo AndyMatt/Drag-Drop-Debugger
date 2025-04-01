@@ -83,6 +83,20 @@ namespace Drag_DropDebugger.Helpers
             return list.ToArray();
         }
 
+        public static Dictionary<string, object> ClassToDictionary(object classObj)
+        {
+            Dictionary<string, object> list = new Dictionary<string, object>();
+            if (classObj != null)
+            {
+                FieldInfo[] fieldInfo = classObj.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                foreach (FieldInfo field in fieldInfo)
+                {
+                    list.Add(field.Name, ParsepropertyValue(field, classObj));
+                }
+            }
+            return list;
+        }
+
         private static object? ParsepropertyValue(FieldInfo field, object classObj)
         {
 
