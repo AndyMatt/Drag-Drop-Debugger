@@ -147,8 +147,7 @@ namespace Drag_DropDebugger.DataHandlers
             if (desc == null)
                 return;
 
-            string[] propertyStrings = StringHelper.ClassToString(desc);
-            TabHelper.AddStringListTab(tabCtrl, desc.cFileName, propertyStrings);
+            TabHelper.AddDataGridTab(tabCtrl, "Header", StringHelper.ClassToDictionary(desc));
         }
 
         public TabControl mTabReference;
