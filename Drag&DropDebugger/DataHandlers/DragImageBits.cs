@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Drawing.Imaging;
 using System.Drawing;
 using WpfHexaEditor.Core;
+using Drag_DropDebugger.UI;
 
 namespace Drag_DropDebugger.DataHandlers
 {
@@ -33,24 +34,31 @@ namespace Drag_DropDebugger.DataHandlers
             int mBitmapHandle = byteReader.read_int();
             int mColorRef = byteReader.read_int();
 
-            TabHelper.AddStringListTab(childTab, "Properties", new string[]
+            StackedDataTab stackedDataTab = new StackedDataTab("Header");
+
+            stackedDataTab.AddDataGrid("Properties", new Dictionary<string, object>()
             {
-                $"Width: {mWidth}",
-                $"Height: {mHeight}",
-                $"OffsetX: {mX}",
-                $"OffsetY: {mY}",
-                $"BitmapHandle: 0x{mBitmapHandle.ToString("X")}",
-                $"ColorRef",
-                $"    Alpha: {(mColorRef & 0xFF000000)>>24}",
-                $"    Red: {(mColorRef & 0x00FF0000)>>16}",
-                $"    Green: {(mColorRef & 0x0000FF00)>>8}",
-                $"    Blue: {(mColorRef & 0x000000FF)}",
+                { "Width", mWidth },
+                { "Height", mHeight },
+                { "OffsetX", mX },
+                { "OffsetY", mY },
+                { "BitmapHandle", $"0x{mBitmapHandle.ToString("X").PadLeft(8,'0')}"},
             });
 
-            TabHelper.AddRawDataTab(childTab, rawData, "Raw");
+            stackedDataTab.AddDataGrid("ColorRef", new Dictionary<string, object>()
+            {
+                { "Alpha", (mColorRef & 0xFF000000)>>24 },
+                { "Red", (mColorRef & 0x00FF0000)>>16 },
+                { "Green", (mColorRef & 0x0000FF00)>>8 },
+                { "Blue", (mColorRef & 0x000000FF) },
+            });
 
             BitmapSource bmpSource = FromArray(byteReader.read_remainingbytes(), mWidth, mHeight, 4);
-            TabHelper.AddBitmapTab(childTab, "Preview", bmpSource);
+            stackedDataTab.AddPreviewPanel("Preview", bmpSource);
+
+            TabHelper.AddStackTab(childTab, stackedDataTab);
+            TabHelper.AddRawDataTab(childTab, rawData, "Raw");
+
             mTabReference = childTab;
         }
 
