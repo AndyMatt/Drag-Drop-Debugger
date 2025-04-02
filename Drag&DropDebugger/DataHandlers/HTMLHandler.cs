@@ -31,7 +31,12 @@ namespace Drag_DropDebugger.DataHandlers
         private static object? HandleHTML(TabControl ParentTab, MemoryStream dropData)
         {
             if (dropData is MemoryStream)
-                return TabHelper.AddHTMLTab(ParentTab, "text/html", Encoding.ASCII.GetString(((MemoryStream)dropData).ToArray()));
+            {
+                TabControl childTab = TabHelper.AddSubTab(ParentTab, "text/html");
+                TabHelper.AddHTMLTab(childTab, "Preview", Encoding.ASCII.GetString(((MemoryStream)dropData).ToArray()));
+                TabHelper.AddRawDataTab(childTab, ((MemoryStream)dropData));
+                return childTab;
+            }
 
             return null;
         }
