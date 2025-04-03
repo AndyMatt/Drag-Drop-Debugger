@@ -1,4 +1,4 @@
-﻿using Drag_DropDebugger.DataHandlers;
+using Drag_DropDebugger.DataHandlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +45,26 @@ namespace Drag_DropDebugger.Helpers
             {
                 return "NA";
             }
+        }
+
+        public static string GetFileSizeString(uint fileSize)
+        {
+            string[] bytePeriods = { " B", " KB", " MB", " GB", " TB" };
+            string byteSizeStr = fileSize.ToString("N0") + " bytes";
+
+            if (fileSize < 1024)
+                return byteSizeStr;
+
+            int period = 0;
+            double fileSizeConv = fileSize;
+            while (fileSizeConv > 1024)
+            {
+                fileSizeConv /= 1024;
+                period++;
+            }
+            fileSizeConv = Math.Round(fileSizeConv, period > 2 ? 2 : 0);
+
+            return $"{fileSizeConv}{bytePeriods[period]} ({byteSizeStr})";
         }
 
         public static string GetFileSizeString(uint fileSizeHigh, uint fileSizeLow)
