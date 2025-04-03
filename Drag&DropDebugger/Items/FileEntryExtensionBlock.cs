@@ -26,8 +26,8 @@ namespace Drag_DropDebugger.Items
         ushort mSize;
         ushort mVersion; // 3=>Windows XP or 2003   7=> Windows Vista (SP0) 8=> Windows 2008, 7, 8.0    9=> Windows 8.1, 10, 11
         uint mExtensionSigniture; //0xBEEF0004
-        uint mCreationModificationTime;
-        uint mLastAccessTime;
+        DOSDateTime mCreationModificationTime;
+        DOSDateTime mLastAccessTime;
         ushort mUnknownVersion; //0x14 ⇒ Windows XP or 2003   0x26 ⇒ Windows Vista(SP0)   0x2a ⇒ Windows 2008, 7, 8.0 0x2e ⇒ Windows 8.1, 10
         ushort mUnknown1; //0x0
         NTFSFileReference? mNtfsReference;

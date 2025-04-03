@@ -14,7 +14,7 @@ namespace Drag_DropDebugger.Items
         byte mClassType;
         byte mUnknown; //0x00
         uint mFileSize;
-        uint mLastModificationTime;
+        DOSDateTime mLastModificationTime;
         ushort mFileAttributes;
         string mPrimaryName;
 
