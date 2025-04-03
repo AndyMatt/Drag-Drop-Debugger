@@ -102,6 +102,9 @@ namespace Drag_DropDebugger.Items
 
         string GetClassTypeString(byte _classTypeID)
         {
+            if (_classTypeID == 0x74)
+                return "DelegateFolderExtensionBlock";
+
             if ((_classTypeID & 0x1) == 0x1)
                 return "DirectoryExtryExtensionBlock";
 
