@@ -29,6 +29,7 @@ namespace Drag_DropDebugger.Items
             {new Guid("446D16B1-8DAD-4870-A748-402EA43D788C"), typeof(SystemProperties)},
             {new Guid("FFAE9DB7-1C8D-43FF-818C-84403AA3732D"), typeof(SourcePackageFamilyName)},
             {new Guid("0DED77B3-C614-456C-AE5B-285B38D7B01B"), typeof(LauncherProperties)},
+            {new Guid("46588ae2-4cbc-4338-bbfc-139326986dce"), typeof(SecurityIdentifier)},
         };
 
         public WindowsPropertySet(ByteReader byteReader, int index = -1)
