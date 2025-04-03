@@ -34,7 +34,7 @@ namespace Drag_DropDebugger.DataHandlers
             {
                 TabControl childTab = TabHelper.AddSubTab(ParentTab, "text/html");
                 TabHelper.AddHTMLTab(childTab, "Preview", Encoding.ASCII.GetString(((MemoryStream)dropData).ToArray()));
-                TabHelper.AddRawDataTab(childTab, ((MemoryStream)dropData));
+                TabHelper.AddHTMLTextTab(childTab, (MemoryStream)dropData);
                 return childTab;
             }
 
