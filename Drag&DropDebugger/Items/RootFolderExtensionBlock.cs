@@ -1,4 +1,4 @@
-﻿using Drag_DropDebugger.Helpers;
+using Drag_DropDebugger.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,9 +14,10 @@ namespace Drag_DropDebugger.Items
         ushort mVersion; // Seen 0x0001
         uint mExtensionSigniture; //0xBEEF0026
         uint mUnknownFlag; //0x00000011
-        ulong mFileTime1;
-        ulong mFileTime2;
-        ulong mFileTime3;
+        public WinDateTime mCreationDateTime;
+        public WinDateTime mLastModifiedDateTime;
+        public WinDateTime mLastAccessDateTime;
+
 
         ushort mListSize;
         ushort mFirstExtensionBlockOffset;
@@ -30,12 +31,11 @@ namespace Drag_DropDebugger.Items
             mUnknownFlag = byteReader.read_uint();
             if ((mUnknownFlag & 0x10) == 0x10)
             {
-                mFileTime1 = byteReader.read_uint64();
-                mFileTime2 = byteReader.read_uint64();
-                mFileTime3 = byteReader.read_uint64();
+                mCreationDateTime = byteReader.read_uint64();
+                mLastModifiedDateTime = byteReader.read_uint64();
+                mLastAccessDateTime = byteReader.read_uint64();
 
                 mFirstExtensionBlockOffset = byteReader.read_ushort();
-
             }
 
             TabHelper.AddDataGridTab(childTab, "Header", new Dictionary<string, object>()
@@ -44,9 +44,9 @@ namespace Drag_DropDebugger.Items
                 {"Version", mVersion},
                 {"ExtensionSigniture", $"0x{mExtensionSigniture.ToString("X2")}"},
                 {"UnknownFlag", mUnknownFlag},
-                {"FileTime1", mFileTime1},
-                {"FileTime2", mFileTime2},
-                {"FileTime3", mFileTime3},
+                {"DateCreated", mCreationDateTime},
+                {"DateLastModified", mLastModifiedDateTime},
+                {"DateLastAccess", mLastAccessDateTime},
                 {"FirstExtensionBlockOffset", $"{mFirstExtensionBlockOffset} (0x{mFirstExtensionBlockOffset.ToString("X")}"},
             }, 0);
 
