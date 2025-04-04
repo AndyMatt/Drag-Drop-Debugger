@@ -193,6 +193,14 @@ namespace Drag_DropDebugger.Helpers
             return result;
         }
 
+        public string read_UnicodeString(int strLength, bool advance = true)
+        {
+            string result = Encoding.Unicode.GetString(bytes, (int)_iterator, (int)strLength*2);
+            if (advance)
+                _iterator += (uint)strLength*2;
+            return result;
+        }
+
         public string read_UnicodeString(bool advance = true)
         {
             uint pos = _iterator;
