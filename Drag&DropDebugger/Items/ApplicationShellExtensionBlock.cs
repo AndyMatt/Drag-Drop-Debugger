@@ -1,4 +1,4 @@
-﻿using Drag_DropDebugger.Helpers;
+using Drag_DropDebugger.Helpers;
 using Drag_DropDebugger.UI;
 using System;
 using System.Collections.Generic;
@@ -16,6 +16,7 @@ namespace Drag_DropDebugger.Items
         uint mExtensionSigniture; //0xBEEF0027
         WindowsPropertySet? mPropertySet;
         uint mTerminator;
+        ushort mFirstExtensionBlockOffset;
 
         public ApplicationShellExtensionBlock(TabControl parentTab, ByteReader byteReader)
         {
@@ -30,6 +31,7 @@ namespace Drag_DropDebugger.Items
             childTab.Items.Add(propertySetTab);
 
             mTerminator = byteReader.read_uint();
+            mFirstExtensionBlockOffset = byteReader.read_ushort();
 
             TabHelper.AddDataGridTab(childTab, "Header", new Dictionary<string, object>()
             {
@@ -37,6 +39,7 @@ namespace Drag_DropDebugger.Items
                 {"Version", mVersion},
                 {"ExtensionSigniture", $"0x{mExtensionSigniture.ToString("X2")}"},
                 {"Terminator", mTerminator},
+                {"FirstExtensionBlockOffset", mFirstExtensionBlockOffset},
                 {"PropertySet", propertySetTab }
             }, 0);
 
