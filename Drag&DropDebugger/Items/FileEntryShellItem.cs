@@ -56,6 +56,11 @@ namespace Drag_DropDebugger.Items
             mTabReference = childTab;
         }
 
+        public string GetPrimaryName()
+        {
+            return mPrimaryName;
+        }
+
         string GetClassTypeString(byte _classTypeID)
         {
             if ((_classTypeID & 0x1) == 0x1)
