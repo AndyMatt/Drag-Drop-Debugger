@@ -47,7 +47,7 @@ namespace Drag_DropDebugger.Items
                 {"Unknown", mUnknown},
                 {"InnerDataSize", mInnerDataSize },
                 {"Signiture", mSigniture },
-                {"FileEntryShellItem", mFileShellEntry.mTabReference },
+                {mFileShellEntry.GetPropertyString(), mFileShellEntry.mTabReference },
                 {"DelegateClassId", mDelegateClassId },
                 {"DelegateFolderId", mDelegateFolderId },
                 {"ExtensionBlock", mExtensionBlock.mTabReference },
