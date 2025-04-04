@@ -1,8 +1,9 @@
-﻿using System.Windows.Controls;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows;
+using Drag_DropDebugger.Helpers;
 
 namespace Drag_DropDebugger.UI
 {
@@ -37,12 +38,13 @@ namespace Drag_DropDebugger.UI
                 Key = key;
                 mObject = value;
                 Text = "EMPTY";
-
+               
                 if (mObject != null)
                 {
                     Text = mObject.ToString();
+                    string _type = mObject.GetType().Name;
 
-                    switch (mObject.GetType().Name)
+                    switch (_type)
                     {
                         case "StackedDataTab":
                         case "PropertySetTab":
@@ -57,6 +59,15 @@ namespace Drag_DropDebugger.UI
                             {
                                 Text = "...";
                                 mObject = tabItem;
+                            }
+                            break;
+                        case "Guid":
+                            Text = $"{{{mObject.ToString()}}}";
+                            break;
+                        case "UInt32":
+                            if(key == "FileSize")
+                            {
+                                Text = StringHelper.GetFileSizeString((uint)mObject);
                             }
                             break;
                     }
