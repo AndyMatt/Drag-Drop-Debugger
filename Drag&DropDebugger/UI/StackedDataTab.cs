@@ -58,6 +58,11 @@ namespace Drag_DropDebugger.UI
             AddUIElement(label, new DictionaryGridView(data), indentCount, indexPos);
         }
 
+        public void AddDataGrid(string label, List<KeyValuePair<string, object>> data, int indentCount = 0, int indexPos = -1)
+        {
+            AddUIElement(label, new DictionaryGridView(data), indentCount, indexPos);
+        }
+
         public void AddPreviewPanel(string label, BitmapSource bitmap, int indexPos = -1)
         {
             Image bitmapImage = new Image()

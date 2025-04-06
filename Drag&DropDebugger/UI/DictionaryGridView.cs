@@ -1,4 +1,4 @@
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -90,6 +90,22 @@ namespace Drag_DropDebugger.UI
         }
            
         public DictionaryGridView(Dictionary<String, Object> data)
+        {
+            IsReadOnly = true;
+            HorizontalGridLinesBrush = new SolidColorBrush(Color.FromArgb(20, 0, 0, 0));
+            VerticalGridLinesBrush = new SolidColorBrush(Color.FromArgb(20, 0, 0, 0));
+            SelectionMode = DataGridSelectionMode.Single;
+            SelectionUnit = DataGridSelectionUnit.Cell;
+            Columns.Add(new DataGridTextColumn() { Header = "Property", Binding = new Binding("Key") });
+            Columns.Add(new DataGridTextColumn() { Header = "Value", Binding = new Binding("Text") });
+
+            for (int i = 0; i < data.Count; i++)
+            {
+                Items.Add(new LinkValue(data.ElementAt(i).Key, data.ElementAt(i).Value));
+            }
+        }
+
+        public DictionaryGridView(List<KeyValuePair<string, object>> data)
         {
             IsReadOnly = true;
             HorizontalGridLinesBrush = new SolidColorBrush(Color.FromArgb(20, 0, 0, 0));
