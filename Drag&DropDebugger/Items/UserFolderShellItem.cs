@@ -40,6 +40,29 @@ namespace Drag_DropDebugger.Items
             }
 
             stackedTab.AddDataGrid("UserFolderShellItem", properties, 1);
+
+            List<KeyValuePair<string, object>> Entries = new List<KeyValuePair<string, object>>();
+            while (!byteReader.End() && byteReader.scan_ushort() != 0x0)
+            {
+                ushort identifier = byteReader.scan_ushort(2);
+
+                if ((identifier & 0x70) == 0x30)
+                {
+                    FileEntryShellItem fileEntry = new FileEntryShellItem(parentTab, byteReader);
+                    Entries.Add(new KeyValuePair<string, object>(fileEntry.GetPropertyString(), fileEntry.mTabReference));
+                }
+                else if (identifier == 0x74)
+                {
+                    TabControl delegateTab = TabHelper.AddSubTab(parentTab, "DelegateFolderShellItem");
+                    DelegateFolderShellItem delegateFolder = new DelegateFolderShellItem(delegateTab, byteReader);
+                    Entries.Add(new KeyValuePair<string, object>(delegateFolder.GetPropertyString(), delegateTab));
+                }
+            }
+
+            if (Entries.Count > 0)
+            {
+                stackedTab.AddDataGrid("Entries", Entries, 1);
+            }
         }
     }
 }
