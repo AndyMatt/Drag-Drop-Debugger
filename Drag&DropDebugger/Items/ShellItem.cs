@@ -1,4 +1,4 @@
-﻿using Drag_DropDebugger.Helpers;
+using Drag_DropDebugger.Helpers;
 using Microsoft.Windows.Themes;
 using System;
 using System.Collections.Generic;
@@ -18,7 +18,7 @@ namespace Drag_DropDebugger.Items
 {
     internal static class ShellItemHandler
     {
-        enum SortIndex
+        enum SortIndex : byte
         {
             InternetExplorer = 0x00,
             Libraries = 0x42,
@@ -55,7 +55,7 @@ namespace Drag_DropDebugger.Items
             {
                 ushort size = byteReader.read_ushort();
                 indicator = byteReader.read_byte();
-                byte sortIndex = byteReader.read_byte();
+                SortIndex sortIndex = (SortIndex)byteReader.read_byte();
                 Guid classID = byteReader.read_guid();
 
                 if (ClassIDs.ContainsKey(classID))
