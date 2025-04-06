@@ -1,4 +1,4 @@
-using Drag_DropDebugger.Helpers;
+﻿using Drag_DropDebugger.Helpers;
 using Drag_DropDebugger.UI;
 using System;
 using System.Collections.Generic;
@@ -25,8 +25,11 @@ namespace Drag_DropDebugger.Items
             mVersion = byteReader.read_ushort();
             mExtensionSigniture = byteReader.read_uint();
 
+            byte[] propertySetBytes = byteReader.read_bytes(byteReader.scan_uint());
+            ByteReader propertySetReader = new ByteReader(propertySetBytes);
+
             PropertySetTab propertySetTab = new PropertySetTab();
-            mPropertySet = new WindowsPropertySet(byteReader, 0);
+            mPropertySet = new WindowsPropertySet(propertySetReader, 0);
             propertySetTab.AddPropertySet(mPropertySet);
             childTab.Items.Add(propertySetTab);
 
