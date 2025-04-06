@@ -76,13 +76,17 @@ namespace Drag_DropDebugger.DataHandlers
                     }
                     else
                     {
-                        TabControl? tabControl;
-                        Object? obj = ShellItemHandler.Handle(childTab, byteReader, out tabControl);
-                        if (obj != null)
+                        while (!byteReader.End() && byteReader.scan_ushort() != 0)
                         {
-                            mChildren.Add(obj);
-                            mTabs.Add(tabControl);
+                            TabControl? tabControl;
+                            Object? obj = ShellItemHandler.Handle(childTab, byteReader, out tabControl);
+                            if (obj != null)
+                            {
+                                mChildren.Add(obj);
+                                mTabs.Add(tabControl);
+                            }
                         }
+                        
                     }
 
                 }
