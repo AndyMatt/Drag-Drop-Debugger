@@ -54,6 +54,14 @@ namespace Drag_DropDebugger.Items
             }, 0);
         }
 
+        public string GetPropertyString()
+        {
+            if(mExtensionBlock != null)
+                return $"DelegateFolderShellItem({mExtensionBlock.GetFileName()})";
+            
+            return $"DelegateFolderShellItem({mFileShellEntry.GetPrimaryName()})";
+        }
+
         const uint ExtensionSignitureOffset = 4;
         bool hasExtensionBlock(ByteReader byteReader)
         {
