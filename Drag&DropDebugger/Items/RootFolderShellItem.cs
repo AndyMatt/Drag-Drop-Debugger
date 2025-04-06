@@ -1,4 +1,4 @@
-﻿using Drag_DropDebugger.Helpers;
+using Drag_DropDebugger.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +39,7 @@ namespace Drag_DropDebugger.Items
             };
 
             mFileEntry = new List<FileEntryShellItem>();
-            while (byteReader.scan_ushort() != 0x0)
+            while (!byteReader.End() && byteReader.scan_ushort() != 0x0)
             {
                 ushort identifier = byteReader.scan_ushort(2);
 
