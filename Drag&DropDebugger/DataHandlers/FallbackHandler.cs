@@ -13,6 +13,25 @@ namespace Drag_DropDebugger.DataHandlers
     {
         public static object? Handle(TabControl ParentTab, object dropData, string dropType)
         {
+            if(dropType == "FileDrop")
+            {
+                if (dropData is string[])
+                {
+                    string[] stringData = (string[])dropData;
+                    foreach (string file in stringData)
+                    {
+                        if (file.EndsWith(".lnk"))
+                        {
+                            FileStream fs = File.Open(file, FileMode.Open, FileAccess.Read);
+                            MemoryStream ms = new MemoryStream();
+                            fs.CopyTo(ms);
+
+                            new FileShortcutHandler(ParentTab, ms, dropType);
+                        }
+                    }
+                }
+            }
+
             if (dropData is MemoryStream)
             {
                 return TabHelper.AddRawDataTab(ParentTab, ((MemoryStream)dropData).ToArray(), dropType);
