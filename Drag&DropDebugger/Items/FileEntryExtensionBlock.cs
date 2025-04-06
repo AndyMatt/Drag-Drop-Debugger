@@ -1,4 +1,5 @@
 using Drag_DropDebugger.Helpers;
+using Drag_DropDebugger.UI;
 using System;
 using System.Collections.Generic;
 using System.IO.Packaging;
@@ -83,19 +84,32 @@ namespace Drag_DropDebugger.Items
                 mExtensionBlockOffset = byteReader.read_ushort();
             }
 
-            mTabReference = TabHelper.AddDataGridTab(childTab, "Header", new Dictionary<string, object>()
+            StackedDataTab stackedDataTab = new StackedDataTab("Properties");
+            stackedDataTab.AddDataGrid("Header", new Dictionary<string, object>()
             {
                 {"Size", $"{mSize} (0x{mSize.ToString("X")})"},
                 {"Version", mVersion},
                 {"ExtensionSigniture", $"0x{mExtensionSigniture.ToString("X2")}" },
                 {"CreationModificationTime", mCreationModificationTime },
                 {"LastAccessTime", mLastAccessTime },
-                {"Unknown|Version", mUnknownVersion },
-                {"mNtfsReference", mNtfsReference == null ? "N/A" : $"EntryIndex({mNtfsReference.mEntryIndex}) SequenceNumber({mNtfsReference.mSequenceNumber})" },
+                {"Unknown (Version?)", mUnknownVersion },
                 {"LongStringSize", mLongStringSize },
                 {"LongName", mLongName },
+                {"LocalizedName", mLocalizedName },
                 { "mExtensionBlockOffset", $"0x{mExtensionBlockOffset.ToString("X2")}" },
-            }, 0);
+            });
+
+            if (mNtfsReference != null)
+            {
+                stackedDataTab.AddDataGrid("NtfsReference", new Dictionary<string, object>()
+                {
+                   
+                    {"EntryIndex", $"{mNtfsReference.mEntryIndex} (0x{mNtfsReference.mEntryIndex.ToString("X2").PadLeft(12,'0')})" },
+                    {"SequenceNumber", $"{mNtfsReference.mSequenceNumber} (0x{mNtfsReference.mSequenceNumber.ToString("X2").PadLeft(4,'0')})" },
+                });
+            }
+
+            TabHelper.AddStackTab(childTab, stackedDataTab, 0);
 
             mTabReference = childTab;
         }
