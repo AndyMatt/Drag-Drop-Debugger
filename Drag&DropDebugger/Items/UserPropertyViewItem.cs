@@ -1,4 +1,5 @@
 using Drag_DropDebugger.Helpers;
+using Drag_DropDebugger.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,7 @@ namespace Drag_DropDebugger.Items
 
         public UserPropertyViewItem(TabControl parentTab, ByteReader byteReader)
         {
-            TabControl childTab = TabHelper.AddSubTab(parentTab, "UserPropertyViewItem");
+            StackedDataTab stackedDataTab = new StackedDataTab("UserPropertyViewItem");
             ByteReader viewReader = new ByteReader(byteReader.read_bytes(byteReader.scan_ushort()));
             mSize = viewReader.read_ushort();
             mClassTypeID = viewReader.read_byte();
@@ -39,18 +40,28 @@ namespace Drag_DropDebugger.Items
             mData.mIdentifierSize = viewReader.read_ushort();
             mData.mKnownFolder = viewReader.read_guid();
 
-            mTabReference = TabHelper.AddDataGridTab(parentTab, "Properties", new Dictionary<string, object>()
-                {
-                    {"Size", $"{mSize} (0x{mSize.ToString("X")})" },
-                    {"ClassTypeID", mClassTypeID },
-                    {"UnknownField", mUnknown },
-                    {"UserPropertyView.Size", $"{mData.mSize} (0x{mData.mSize.ToString("X")})" },
-                    {"UserPropertyView.DataSigniture", $"0x{mData.mDataSigniture.ToString("X")}" },
-                    {"UserPropertyView.PropertyStoreDataSize", mData.mPropertyStoreDataSize },
-                    {"UserPropertyView.IdentifierSize", mData.mIdentifierSize},
-                    {"UserPropertyView.KnownFolder.GUID", mData.mKnownFolder.ToString()},
-                    {"UserPropertyView.KnownFolder.Path", NativeMethods.GetFolderFromKnownFolderGUID(mData.mKnownFolder) }
-                }, 0);
+            mTabReference = TabHelper.AddStackTab(parentTab, stackedDataTab);
+
+            stackedDataTab.AddDataGrid("Properties", new Dictionary<string, object>()
+            {
+                {"Size", $"{mSize} (0x{mSize.ToString("X")})" },
+                {"ClassTypeID", mClassTypeID },
+                {"UnknownField", mUnknown },
+            });        
+
+            stackedDataTab.AddDataGrid("UserPropertyView", new Dictionary<string, object>()
+            {
+                {"Size", $"{mData.mSize} (0x{mData.mSize.ToString("X")})" },
+                {"DataSigniture", $"0x{mData.mDataSigniture.ToString("X")}" },
+                {"PropertyStoreDataSize", mData.mPropertyStoreDataSize },
+                {"IdentifierSize", mData.mIdentifierSize},
+            }, 0);
+
+            stackedDataTab.AddDataGrid("KnownFolder", new Dictionary<string, object>()
+            {
+                {"GUID", mData.mKnownFolder.ToString()},
+                {"Path", NativeMethods.GetFolderFromKnownFolderGUID(mData.mKnownFolder) }
+            }, 0);
         }
     }
 }

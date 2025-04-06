@@ -32,7 +32,7 @@ namespace Drag_DropDebugger.Items
             mUnknown = byteReader.read_byte();
             mInnerDataSize = byteReader.read_ushort();
             mSigniture = byteReader.read_AsciiString(4); ;
-            mFileShellEntry = new FileEntryShellItem(TabHelper.AddSubTab(parentTab, "FileEntryShellItem"), byteReader);
+            mFileShellEntry = new FileEntryShellItem(parentTab, byteReader);
             mDelegateClassId = byteReader.read_guid();
             mDelegateFolderId = byteReader.read_guid();
 

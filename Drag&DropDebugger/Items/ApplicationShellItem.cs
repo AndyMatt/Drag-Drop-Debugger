@@ -21,7 +21,7 @@ namespace Drag_DropDebugger.Items
         List<WindowsPropertySet> mProperties;
         PropertySetTab mPropertySetTab;
 
-        public ApplicationShellItem(TabControl parentTab, ByteReader byteReader)
+        public ApplicationShellItem(TabControl parentTab, ref StackedDataTab stackedTab, ByteReader byteReader)
         {
             TabControl childTab = TabHelper.AddSubTab(parentTab, "ApplicationShellItem");
             mSize = byteReader.read_ushort();
