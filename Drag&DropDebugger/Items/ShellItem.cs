@@ -1,4 +1,5 @@
 using Drag_DropDebugger.Helpers;
+using Drag_DropDebugger.UI;
 using Microsoft.Windows.Themes;
 using System;
 using System.Collections.Generic;
@@ -63,28 +64,29 @@ namespace Drag_DropDebugger.Items
                     Type ClassType = ClassIDs[classID];
 
                     TabControl childTab = TabHelper.AddSubTab(parentTab, ClassType.Name);
+                    StackedDataTab stackedDataTab = new StackedDataTab("Properties");
 
                     dynamic? shellItem;
 
                     if (ClassType == typeof(UserFolderShellItem))
                     {
 
-                        shellItem = new UserFolderShellItem(childTab, classID, byteReader);
+                        shellItem = new UserFolderShellItem(childTab, ref stackedDataTab, classID, byteReader);
                     }
                     else
                     {
-                        shellItem = Activator.CreateInstance(ClassType, childTab, byteReader);
+                        shellItem = Activator.CreateInstance(ClassType, childTab, stackedDataTab, byteReader);
                     }
 
-
-                    TabHelper.AddDataGridTab(childTab, "Header", new Dictionary<string, object>()
+                    stackedDataTab.AddDataGrid("Header", new Dictionary<string, object>()
                     {
                         {"Size", $"{size} (0x{size.ToString("X")})"},
                         {"Indicator", indicator},
                         {"SortIndex", sortIndex},
                         {"GUID", classID.ToString()},
-                        {$"{shellItem.GetType().Name}", shellItem.mTabReference},
-                    }, 0);
+                    }, 0, 0);
+
+                    TabHelper.AddStackTab(childTab, stackedDataTab, 0);
 
                     tabCtrl = childTab;
 
