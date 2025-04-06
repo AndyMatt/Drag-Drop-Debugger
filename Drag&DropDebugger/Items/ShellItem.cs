@@ -104,11 +104,11 @@ namespace Drag_DropDebugger.Items
                 tabCtrl = childTab;
                 return new RootFolderShellItem(childTab, byteReader);
             }
-            else if (indicator == 0x32)
+            else if ((indicator & 0x70) == 0x30)
             {
-                TabControl childTab = TabHelper.AddSubTab(parentTab, "FileEntryShellItem");
-                tabCtrl = childTab;
-                return new FileEntryShellItem(childTab, byteReader);
+                FileEntryShellItem fileEntryShellItem = new FileEntryShellItem(parentTab, byteReader);
+                tabCtrl = (TabControl)fileEntryShellItem.mTabReference;
+                return fileEntryShellItem;
             }
             else if (indicator == 0x74)
             {
