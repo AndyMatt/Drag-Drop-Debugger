@@ -42,6 +42,19 @@ namespace Drag_DropDebugger.Items
 
             mTabReference = TabHelper.AddStackTab(parentTab, stackedDataTab);
 
+
+            List<KeyValuePair<string, object>> Entries = new List<KeyValuePair<string, object>>();
+            while (!byteReader.End() && byteReader.scan_ushort() != 0x0)
+            {
+                ushort identifier = byteReader.scan_ushort(2);
+
+                if ((identifier & 0x70) == 0x30)
+                {
+                    FileEntryShellItem fileEntry = new FileEntryShellItem(parentTab, byteReader);
+                    Entries.Add(new KeyValuePair<string, object>(fileEntry.GetPropertyString(), fileEntry.mTabReference));
+                }
+            }
+
             stackedDataTab.AddDataGrid("Properties", new Dictionary<string, object>()
             {
                 {"Size", $"{mSize} (0x{mSize.ToString("X")})" },
@@ -62,6 +75,8 @@ namespace Drag_DropDebugger.Items
                 {"GUID", mData.mKnownFolder.ToString()},
                 {"Path", NativeMethods.GetFolderFromKnownFolderGUID(mData.mKnownFolder) }
             }, 0);
+
+            stackedDataTab.AddDataGrid("Entries", Entries);
         }
     }
 }
